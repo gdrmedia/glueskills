@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Paintbrush, PenTool, Target, Search } from "lucide-react";
+import { Paintbrush, PenTool, Target, Search, Sparkles } from "lucide-react";
 
 const categories = [
   {
@@ -47,6 +47,17 @@ const categories = [
     text: "text-rose-500",
     border: "hover:border-rose-500/30",
     glow: "group-hover:shadow-rose-500/5",
+  },
+  {
+    href: "/dashboard/inspiration",
+    label: "Inspiration",
+    description: "Curated design feeds from Awwwards, Dribbble, and more",
+    icon: Sparkles,
+    bg: "bg-indigo-500/10",
+    bgHover: "group-hover:bg-indigo-500/20",
+    text: "text-indigo-500",
+    border: "hover:border-indigo-500/30",
+    glow: "group-hover:shadow-indigo-500/5",
   },
 ];
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { ToolGrid } from "@/components/dashboard/tool-grid";
-import { ImageDown, Palette, RulerDimensionLine, Contrast, Blend, Type, Fingerprint } from "lucide-react";
+import { ImageDown, Palette, RulerDimensionLine, Contrast, Blend, Type, Fingerprint, FileImage } from "lucide-react";
 
 const tools = [
   {
@@ -15,6 +15,12 @@ const tools = [
     label: "Image Resizer",
     description: "Resize images with presets for social media and web",
     icon: ImageDown,
+  },
+  {
+    href: "/dashboard/designer/image-compressor",
+    label: "Image Compressor",
+    description: "Compress PNG, JPG, and WebP images — no uploads, runs in browser",
+    icon: FileImage,
   },
   {
     href: "/dashboard/designer/color-palette",

@@ -7,6 +7,7 @@ import {
   Target,
   Search,
   LayoutDashboard,
+  Sparkles,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
@@ -16,6 +17,7 @@ const sections = [
   { href: "/dashboard/copywriter", label: "Copywriter", icon: PenTool },
   { href: "/dashboard/strategist", label: "Strategist", icon: Target },
   { href: "/dashboard/seo", label: "SEO", icon: Search },
+  { href: "/dashboard/inspiration", label: "Inspiration", icon: Sparkles },
 ];
 
 export { sections };
