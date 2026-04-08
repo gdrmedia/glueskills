@@ -13,20 +13,20 @@ interface NavLinkProps {
 
 export function NavLink({ href, label, icon: Icon }: NavLinkProps) {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
 
   return (
     <Link
       href={href}
       prefetch={true}
       className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+        "flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-200",
         isActive
-          ? "bg-primary text-primary-foreground"
-          : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+          ? "bg-foreground text-background"
+          : "text-foreground/55 hover:text-foreground/90 hover:translate-x-1"
       )}
     >
-      <Icon className="h-4 w-4 shrink-0" />
+      <Icon className="h-4 w-4 shrink-0" strokeWidth={isActive ? 2 : 1.75} />
       {label}
     </Link>
   );

@@ -9,7 +9,6 @@ import {
   LayoutDashboard,
   Sparkles,
 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 
 const sections = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
@@ -24,12 +23,11 @@ export { sections };
 
 export function Sidebar() {
   return (
-    <aside className="hidden md:flex md:w-56 md:flex-col md:border-r md:bg-card">
-      <div className="flex h-14 items-center px-4 font-semibold tracking-tight">
+    <aside className="hidden md:flex md:w-64 md:flex-col md:bg-background md:shrink-0">
+      <div className="flex h-16 items-center px-6">
         <img src="/glueskills-logo.png" alt="GlueSkills" className="h-[2.5rem]" />
       </div>
-      <Separator />
-      <nav className="flex flex-col gap-1 p-3">
+      <nav className="flex flex-col gap-0.5 px-4 py-2">
         {sections.map((item) => (
           <NavLink key={item.href} {...item} />
         ))}

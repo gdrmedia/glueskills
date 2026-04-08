@@ -56,8 +56,11 @@ const tools = [
 
 export default function DesignerPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Designer Tools</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-headline text-3xl font-extrabold tracking-tight">Designer Tools</h1>
+        <p className="mt-1.5 text-muted-foreground">Streamline your visual workflow with professional creative utilities.</p>
+      </div>
       <ToolGrid tools={tools} color="purple" />
     </div>
   );

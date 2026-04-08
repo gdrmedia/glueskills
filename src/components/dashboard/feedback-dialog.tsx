@@ -50,7 +50,7 @@ export function FeedbackDialog() {
 
   return (
     <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setType(null); setMessage(""); } }}>
-      <DialogTrigger render={<Button variant="ghost" size="sm" />}>
+      <DialogTrigger render={<Button variant="ghost" size="sm" className="font-semibold text-foreground/60 hover:text-foreground/90 hover:bg-transparent" />}>
         <MessageSquare className="mr-1.5 h-4 w-4" />
         Feedback
       </DialogTrigger>

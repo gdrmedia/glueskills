@@ -38,8 +38,11 @@ const tools = [
 
 export default function CopywriterPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Copywriter Tools</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-headline text-3xl font-extrabold tracking-tight">Copywriter Tools</h1>
+        <p className="mt-1.5 text-muted-foreground">Craft compelling copy faster with smart writing utilities.</p>
+      </div>
       <ToolGrid tools={tools} color="teal" />
     </div>
   );

@@ -38,8 +38,11 @@ const tools = [
 
 export default function SeoPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">SEO Tools</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-headline text-3xl font-extrabold tracking-tight">SEO Tools</h1>
+        <p className="mt-1.5 text-muted-foreground">Optimize for search and social with precision SEO utilities.</p>
+      </div>
       <ToolGrid tools={tools} color="rose" />
     </div>
   );

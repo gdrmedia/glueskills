@@ -38,8 +38,11 @@ const tools = [
 
 export default function StrategistPage() {
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight">Strategist Tools</h1>
+    <div className="space-y-8">
+      <div>
+        <h1 className="font-headline text-3xl font-extrabold tracking-tight">Strategist Tools</h1>
+        <p className="mt-1.5 text-muted-foreground">Think clearly and present sharper with strategic planning tools.</p>
+      </div>
       <ToolGrid tools={tools} color="orange" />
     </div>
   );
