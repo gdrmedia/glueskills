@@ -23,11 +23,11 @@ export { sections };
 
 export function Sidebar() {
   return (
-    <aside className="hidden md:flex md:w-64 md:flex-col md:bg-background md:shrink-0">
-      <div className="flex h-16 items-center px-6">
-        <img src="/glueskills-logo.png" alt="GlueSkills" className="h-[2.5rem]" />
+    <aside className="hidden md:flex md:w-64 md:flex-col md:bg-transparent md:shrink-0" style={{ padding: "20px" }}>
+      <div className="flex h-16 items-center">
+        <img src="/glueskills-logo.svg" alt="GlueSkills" className="h-[3rem]" />
       </div>
-      <nav className="flex flex-col gap-0.5 px-4 py-2">
+      <nav className="flex flex-col gap-0.5 py-2">
         {sections.map((item) => (
           <NavLink key={item.href} {...item} />
         ))}
