@@ -191,7 +191,7 @@ export default function DashboardPage() {
       <div className="flex flex-col items-center pt-8 pb-2">
         <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-center">
           Damn, you got{" "}
-          <span className="italic bg-clip-text text-transparent" style={{ backgroundImage: "linear-gradient(to right, #f0047f, #f962ab)" }}>
+          <span className="font-skills font-normal" style={{ color: "#f0047f", letterSpacing: "1px" }}>
             skills.
           </span>
         </h1>

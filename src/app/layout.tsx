@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter, JetBrains_Mono, Manrope } from "next/font/google";
+import localFont from "next/font/local";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
@@ -20,6 +21,11 @@ const manrope = Manrope({
   subsets: ["latin"],
 });
 
+const welcomeDarling = localFont({
+  src: "../fonts/WelcomeDarling.otf",
+  variable: "--font-welcome-darling",
+});
+
 export const metadata: Metadata = {
   title: "GlueSkills — Creative Dashboard",
   description: "Fast, lean tools for creatives",
@@ -33,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} ${manrope.variable} h-full antialiased`}
+      className={`${inter.variable} ${jetbrainsMono.variable} ${manrope.variable} ${welcomeDarling.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-gradient-to-b from-white to-[#e8eaed]">
         <ClerkProvider>

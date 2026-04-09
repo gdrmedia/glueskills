@@ -11,6 +11,7 @@
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
   --font-heading: var(--font-manrope), 'Manrope', ui-sans-serif, system-ui, sans-serif;
   --font-headline: var(--font-manrope), 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --font-skills: var(--font-welcome-darling), cursive;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
