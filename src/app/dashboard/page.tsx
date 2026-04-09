@@ -190,7 +190,7 @@ export default function DashboardPage() {
       {/* ── Hero welcome ── */}
       <div className="flex flex-col items-center pt-8 pb-2">
         <h1 className="font-headline text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-center">
-          Dude, you got{" "}
+          Damn, you got{" "}
           <span className="italic bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">
             skills.
           </span>
