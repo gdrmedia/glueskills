@@ -35,7 +35,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${jetbrainsMono.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col bg-gradient-to-b from-white to-[#e8eaed]">
         <ClerkProvider>
           <QueryProvider>
             <TooltipProvider>{children}</TooltipProvider>
