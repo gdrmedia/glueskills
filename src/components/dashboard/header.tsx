@@ -19,7 +19,7 @@ export function Header() {
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-0 bg-background border-none">
           <div className="flex h-16 items-center px-6">
-            <img src="/glueskills-logo.svg" alt="GlueSkills" className="h-[3.75rem]" />
+            <a href="/dashboard"><img src="/glueskills-logo.svg" alt="GlueSkills" className="h-[3.75rem]" /></a>
           </div>
           <nav className="flex flex-col gap-0.5 px-4 py-2">
             {sections.map((item) => (
@@ -36,7 +36,14 @@ export function Header() {
       <div className="h-6 w-px bg-foreground/10" />
 
       <Show when="signed-in">
-        <UserButton />
+        <UserButton
+          appearance={{
+            elements: {
+              avatarBox: { backgroundColor: "black" },
+              userButtonAvatarBox: { backgroundColor: "black" },
+            },
+          }}
+        />
       </Show>
     </header>
   );

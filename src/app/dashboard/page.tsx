@@ -84,6 +84,15 @@ const allTools: ToolEntry[] = [
 
 const categories = [
   {
+    href: "/dashboard/inspiration",
+    label: "Inspiration",
+    description: "Curated design feeds from Awwwards, Dribbble, and more",
+    icon: Sparkles,
+    iconBg: "bg-indigo-500/12 group-hover:bg-indigo-500/20",
+    iconText: "text-indigo-600",
+    btnGradient: "from-indigo-600 to-indigo-400",
+  },
+  {
     href: "/dashboard/designer",
     label: "Designer",
     description: "Image resizer, color palettes, aspect ratio calculator",
@@ -118,15 +127,6 @@ const categories = [
     iconBg: "bg-rose-500/12 group-hover:bg-rose-500/20",
     iconText: "text-rose-600",
     btnGradient: "from-rose-600 to-rose-400",
-  },
-  {
-    href: "/dashboard/inspiration",
-    label: "Inspiration",
-    description: "Curated design feeds from Awwwards, Dribbble, and more",
-    icon: Sparkles,
-    iconBg: "bg-indigo-500/12 group-hover:bg-indigo-500/20",
-    iconText: "text-indigo-600",
-    btnGradient: "from-indigo-600 to-indigo-400",
   },
 ];
 
