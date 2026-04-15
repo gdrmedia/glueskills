@@ -1,7 +1,7 @@
 "use client";
 
 import { ToolGrid } from "@/components/dashboard/tool-grid";
-import { ImageDown, Palette, RulerDimensionLine, Contrast, Blend, Type, Fingerprint, FileImage } from "lucide-react";
+import { ImageDown, Palette, RulerDimensionLine, Contrast, Blend, Type, Fingerprint, FileImage, LayoutPanelLeft } from "lucide-react";
 
 const tools = [
   {
@@ -9,6 +9,12 @@ const tools = [
     label: "Brand Extractor",
     description: "Extract logos, colors, and fonts from any website",
     icon: Fingerprint,
+  },
+  {
+    href: "/dashboard/designer/banner-resizer",
+    label: "Banner Resizer",
+    description: "Generate IAB banner size variants from your Figma source frames — starting point, not a finished deliverable",
+    icon: LayoutPanelLeft,
   },
   {
     href: "/dashboard/designer/image-resizer",
