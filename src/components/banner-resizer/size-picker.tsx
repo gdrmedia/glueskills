@@ -40,6 +40,11 @@ export function SizePicker({ selected, onChange }: SizePickerProps) {
 
   function addCustom() {
     setCustomError(null);
+    if (customW.includes(".") || customW.toLowerCase().includes("e") ||
+        customH.includes(".") || customH.toLowerCase().includes("e")) {
+      setCustomError("Width and height must be whole numbers.");
+      return;
+    }
     const w = Number(customW);
     const h = Number(customH);
     if (!Number.isInteger(w) || !Number.isInteger(h)) {
@@ -76,6 +81,8 @@ export function SizePicker({ selected, onChange }: SizePickerProps) {
     label: IAB_GROUPS[g],
     sizes: IAB_SIZES.filter((s) => s.group === g),
   }));
+
+  const customTargets = selected.filter((s) => s.isCustom);
 
   return (
     <div className="space-y-6">
@@ -143,9 +150,9 @@ export function SizePicker({ selected, onChange }: SizePickerProps) {
         </div>
         {customError && <p className="mt-2 text-sm text-rose-600">{customError}</p>}
 
-        {selected.filter((s) => s.isCustom).length > 0 && (
+        {customTargets.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
-            {selected.filter((s) => s.isCustom).map((s) => (
+            {customTargets.map((s) => (
               <span
                 key={targetKey(s)}
                 className="inline-flex items-center gap-2 rounded-full bg-purple-500/10 px-3 py-1 text-xs font-medium text-purple-700"
