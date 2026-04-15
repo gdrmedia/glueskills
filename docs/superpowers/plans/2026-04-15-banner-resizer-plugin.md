@@ -186,16 +186,18 @@ module.exports = (env, argv) => ({
 
   module: {
     rules: [
+      // ts-loader's configFile only accepts a string path, not a function.
+      // Split into two rules — .tsx files in src/ui use the UI tsconfig (DOM lib + jsx),
+      // .ts files everywhere else use the sandbox tsconfig.
       {
-        test: /\.tsx?$/,
-        use: [
-          {
-            loader: "ts-loader",
-            options: {
-              configFile: (file) => (file.endsWith(".tsx") ? "tsconfig.ui.json" : "tsconfig.json"),
-            },
-          },
-        ],
+        test: /\.tsx$/,
+        include: path.resolve(__dirname, "src/ui"),
+        use: [{ loader: "ts-loader", options: { configFile: "tsconfig.ui.json" } }],
+      },
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [{ loader: "ts-loader", options: { configFile: "tsconfig.json" } }],
       },
       { test: /\.css$/, use: ["style-loader", "css-loader"] },
     ],
