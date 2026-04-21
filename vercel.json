@@ -1,5 +1,5 @@
 {
   "crons": [
-    { "path": "/api/banner-jobs/cleanup", "schedule": "0 * * * *" }
+    { "path": "/api/banner-jobs/cleanup", "schedule": "0 0 * * *" }
   ]
 }
