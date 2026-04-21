@@ -69,7 +69,7 @@ export function SpecViewer({ placements, partners, summary }: Props) {
   const modalPlacement = modalId ? hydrated.find((p) => p.id === modalId) : null;
 
   return (
-    <div className="viewerRoot">
+    <div className="viewerRoot bsd-app">
       <ViewerHeader
         summary={summary}
         partners={partners}
