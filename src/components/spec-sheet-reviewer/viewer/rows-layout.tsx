@@ -52,6 +52,7 @@ export function RowsLayout({
               <RichRow
                 key={pl.id}
                 placement={pl}
+                partners={partners}
                 partnerColor={p.color}
                 expanded={expandedId === pl.id}
                 onToggle={() => onToggle(pl.id)}
@@ -66,11 +67,13 @@ export function RowsLayout({
 
 function RichRow({
   placement,
+  partners,
   partnerColor,
   expanded,
   onToggle,
 }: {
   placement: HydratedPlacement;
+  partners: Partner[];
   partnerColor: string;
   expanded: boolean;
   onToggle: () => void;
@@ -143,7 +146,11 @@ function RichRow({
         </span>
       </button>
       {expanded && (
-        <DetailView placement={placement} partnerColor={partnerColor} />
+        <DetailView
+          placement={placement}
+          partners={partners}
+          partnerColor={partnerColor}
+        />
       )}
     </article>
   );
