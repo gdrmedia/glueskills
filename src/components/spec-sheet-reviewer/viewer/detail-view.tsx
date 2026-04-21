@@ -100,7 +100,7 @@ function Kpi({
   label: string;
   value: React.ReactNode;
   sub?: React.ReactNode;
-  tone?: "default" | "urgent" | "overdue" | "tbd";
+  tone?: "default" | "urgent" | "overdue" | "soon" | "safe" | "tbd";
 }): React.ReactElement {
   return (
     <div className={`bsd-kpi bsd-kpi-${tone}`}>
@@ -189,13 +189,8 @@ Due: ${dueDisplay(placement)}`;
   }
 
   const dims = asArray(placement.dimensions);
-  const dueTone: "default" | "urgent" | "overdue" | "tbd" = placement.dueTBD
-    ? "tbd"
-    : (() => {
-        const k = urgencyOf(placement.creativeDue).key;
-        if (k === "urgent" || k === "overdue") return k;
-        return "default";
-      })();
+  const dueTone: "default" | "urgent" | "overdue" | "soon" | "safe" | "tbd" =
+    placement.dueTBD ? "tbd" : urgencyOf(placement.creativeDue).key;
 
   const days = placement.creativeDue ? daysUntil(placement.creativeDue) : null;
 
