@@ -1,0 +1,5 @@
+{
+  "crons": [
+    { "path": "/api/banner-jobs/cleanup", "schedule": "0 * * * *" }
+  ]
+}

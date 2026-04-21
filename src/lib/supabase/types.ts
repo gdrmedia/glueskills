@@ -60,3 +60,13 @@ export type InspirationPreference = {
   created_at: string;
   updated_at: string;
 };
+
+export type BannerJob = {
+  code: string;
+  user_id: string;
+  name: string;
+  config: unknown;        // validated by zod at the boundary, kept loose here
+  created_at: string;
+  expires_at: string;
+  consumed_at: string | null;
+};

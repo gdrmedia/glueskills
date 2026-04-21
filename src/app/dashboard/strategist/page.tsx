@@ -1,7 +1,7 @@
 "use client";
 
 import { ToolGrid } from "@/components/dashboard/tool-grid";
-import { LayoutGrid, FileText, Users, UserCircle, Calculator } from "lucide-react";
+import { LayoutGrid, FileText, Users, UserCircle, Calculator, FileSpreadsheet } from "lucide-react";
 
 const tools = [
   {
@@ -33,6 +33,12 @@ const tools = [
     label: "Budget Calculator",
     description: "Plan campaign budgets with line items and category breakdown",
     icon: Calculator,
+  },
+  {
+    href: "/dashboard/strategist/spec-sheet-reviewer",
+    label: "Banner Spec Sheet Reviewer",
+    description: "Turn a messy Excel media spec sheet into a shareable web viewer",
+    icon: FileSpreadsheet,
   },
 ];
 
