@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import styles from "./viewer.module.css";
+import "./viewer.css";
 import type { EnrichedPlacement, Partner, Summary } from "@/lib/spec-sheets/enrich";
 import { urgencyOf } from "./helpers";
 import { ViewerHeader } from "./header";
@@ -69,7 +69,7 @@ export function SpecViewer({ placements, partners, summary }: Props) {
   const modalPlacement = modalId ? hydrated.find((p) => p.id === modalId) : null;
 
   return (
-    <div className={styles.viewerRoot}>
+    <div className="viewerRoot">
       <ViewerHeader
         summary={summary}
         partners={partners}
