@@ -50,6 +50,8 @@ export async function POST(req: NextRequest) {
   const supabaseToken = await getToken({ template: "supabase" });
   const supabase = createSupabaseClient(supabaseToken ?? undefined);
 
+  // Rate limit is global (not per-user): `brands` has no user_id column —
+  // single-tenant admin posture. Revisit if roles/multi-tenancy land.
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
   const { count, error: countError } = await supabase
     .from("brands")

@@ -86,6 +86,10 @@ describe("POST /api/brands", () => {
     const row = mockInsert.mock.calls[0][0];
     expect(row.slug).toBe("acme");
     expect(row.name).toBe("ACME");
+    expect(row.palette).toEqual(validInput.palette);
+    expect(row.font).toEqual(validInput.font);
+    expect(row.logo_alt_url).toBeNull();
+    expect(row.images).toBeNull();
     const json = await res.json();
     expect(json.slug).toBe("acme");
   });
@@ -93,6 +97,14 @@ describe("POST /api/brands", () => {
   it("returns 500 if insert fails", async () => {
     mockInsert.mockResolvedValue({ error: { message: "db down" } });
     expect((await POST(buildPost(validInput))).status).toBe(500);
+  });
+
+  it("returns 409 when the slug is already taken", async () => {
+    mockInsert.mockResolvedValue({ error: { code: "23505", message: "duplicate key" } });
+    const res = await POST(buildPost(validInput));
+    expect(res.status).toBe(409);
+    const json = await res.json();
+    expect(json.error).toContain("acme");
   });
 });
 
