@@ -597,7 +597,7 @@ git commit -m "feat(admin): protect /admin/* with Clerk"
 
 Matches `src/app/api/spec-sheets/route.ts` almost 1:1 — Clerk auth + rate limit + insert. Rate limit chosen: 30 brands per hour per user (admins bulk-create).
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
 
 `src/app/api/brands/route.test.ts`:
 
@@ -614,8 +614,8 @@ const mockList = vi.fn();
 
 const mockFrom = vi.fn(() => ({
   insert: (...args: unknown[]) => mockInsert(...args),
-  select: () => ({
-    eq: () => ({ gte: () => mockCount() }),
+  select: (..._args: unknown[]) => ({
+    gte: () => mockCount(),
     order: () => mockList(),
   }),
 }));
@@ -728,7 +728,7 @@ describe("GET /api/brands", () => {
 });
 ```
 
-- [ ] **Step 2: Run — expect failure**
+- [x] **Step 2: Run — expect failure**
 
 ```bash
 npx vitest run src/app/api/brands/route.test.ts
@@ -736,7 +736,7 @@ npx vitest run src/app/api/brands/route.test.ts
 
 Expected: module-not-found.
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 `src/app/api/brands/route.ts`:
 
@@ -797,12 +797,7 @@ export async function POST(req: NextRequest) {
   const { count, error: countError } = await supabase
     .from("brands")
     .select("*", { count: "exact", head: true })
-    .eq("user_id", userId)      // harmless — column does not exist; see note
     .gte("created_at", oneHourAgo);
-
-  // Note: `brands` has no user_id column (single-tenant admin). For the MVP
-  // rate limit we count total inserts globally in the last hour instead.
-  // (Drop the .eq and remove the `userId` import when you see this comment.)
 
   if (countError) {
     console.error("brands rate limit count failed:", countError);
@@ -841,16 +836,9 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-Simplify before committing: remove the comment and the dead `.eq("user_id", userId)` — replace with the global count:
+Rate-limit count is global (no `user_id` scoping — the `brands` table is single-tenant admin with no `user_id` column). Mock chain: `select(...) → { gte, order }` — no `eq` intermediary.
 
-```typescript
-const { count, error: countError } = await supabase
-  .from("brands")
-  .select("*", { count: "exact", head: true })
-  .gte("created_at", oneHourAgo);
-```
-
-- [ ] **Step 4: Run — expect pass**
+- [x] **Step 4: Run — expect pass**
 
 ```bash
 npx vitest run src/app/api/brands/route.test.ts
@@ -858,7 +846,7 @@ npx vitest run src/app/api/brands/route.test.ts
 
 Expected: all tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/app/api/brands/route.ts src/app/api/brands/route.test.ts
