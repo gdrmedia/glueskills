@@ -71,26 +71,7 @@ export type BannerJob = {
   consumed_at: string | null;
 };
 
-export type Brand = {
-  id: string;
-  slug: string;
-  name: string;
-  palette: {
-    primary: string;
-    secondary: string;
-    accent?: string;
-    neutral?: string;
-  };
-  font: {
-    family: string;
-    fallback: string;
-    weights: { bold: string; semi: string; regular: string };
-  };
-  logo_primary_url: string;
-  logo_alt_url: string | null;
-  images:
-    | Array<{ url: string; label?: string; sort_order: number }>
-    | null;
-  created_at: string;
-  updated_at: string;
-};
+// Brand row type — canonical shape lives in `@/lib/brands/schema`. Re-exported
+// here so `import { Brand } from "@/lib/supabase/types"` keeps working alongside
+// the other row types.
+export type { BrandPack as Brand } from "@/lib/brands/schema";

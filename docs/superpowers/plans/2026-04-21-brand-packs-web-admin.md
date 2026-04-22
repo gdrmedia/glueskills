@@ -268,32 +268,15 @@ git commit -m "feat(db): add brands table + brand-assets storage bucket"
 
 - [ ] **Step 1: Append `Brand` to the row types**
 
+The canonical shape is derived from the zod schema in Task 4; this file just re-exports it as `Brand` so callers can use either name.
+
 Add to the bottom of `src/lib/supabase/types.ts`:
 
 ```typescript
-export type Brand = {
-  id: string;
-  slug: string;
-  name: string;
-  palette: {
-    primary: string;
-    secondary: string;
-    accent?: string;
-    neutral?: string;
-  };
-  font: {
-    family: string;
-    fallback: string;
-    weights: { bold: string; semi: string; regular: string };
-  };
-  logo_primary_url: string;
-  logo_alt_url: string | null;
-  images:
-    | Array<{ url: string; label?: string; sort_order: number }>
-    | null;
-  created_at: string;
-  updated_at: string;
-};
+// Brand row type — canonical shape lives in `@/lib/brands/schema`. Re-exported
+// here so `import { Brand } from "@/lib/supabase/types"` keeps working alongside
+// the other row types.
+export type { BrandPack as Brand } from "@/lib/brands/schema";
 ```
 
 - [ ] **Step 2: Write failing slug tests**
@@ -525,7 +508,7 @@ const fontSchema = z
 
 const imageSchema = z
   .object({
-    url: z.string().url(),
+    url: z.url(),
     label: z.string().trim().max(80).optional(),
     sort_order: z.number().int().min(0).max(MAX_IMAGES - 1),
   })
@@ -537,8 +520,8 @@ export const brandPackInputSchema = z
     name: z.string().trim().min(1).max(MAX_BRAND_NAME_LENGTH),
     palette: paletteSchema,
     font: fontSchema,
-    logo_primary_url: z.string().url().min(1),
-    logo_alt_url: z.string().url().nullable().optional(),
+    logo_primary_url: z.url(),
+    logo_alt_url: z.url().nullable().optional(),
     images: z.array(imageSchema).max(MAX_IMAGES).nullable().optional(),
   })
   .strict();
