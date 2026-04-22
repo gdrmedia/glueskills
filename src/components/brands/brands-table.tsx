@@ -49,7 +49,7 @@ export function BrandsTable() {
 
       {(!data || data.length === 0) ? (
         <div className="rounded-xl border p-6 text-sm text-muted-foreground">
-          No brands yet. Click "New brand" to create your first one.
+          No brands yet. Click &quot;New brand&quot; to create your first one.
         </div>
       ) : (
         <div className="overflow-hidden rounded-xl border">

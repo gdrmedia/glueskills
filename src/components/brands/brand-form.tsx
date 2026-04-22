@@ -255,7 +255,7 @@ export function BrandForm({ mode, initial }: Props) {
       <section className="space-y-4 rounded-xl border bg-card p-6">
         <h2 className="text-lg font-semibold">Typography</h2>
         <p className="text-xs text-muted-foreground">
-          Weight style names must match the Figma font exactly (e.g. "Semi Bold" not "SemiBold"). Figma is strict.
+          Weight style names must match the Figma font exactly (e.g. &quot;Semi Bold&quot; not &quot;SemiBold&quot;). Figma is strict.
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
@@ -379,7 +379,7 @@ export function BrandForm({ mode, initial }: Props) {
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Delete "{initial?.name}"?</AlertDialogTitle>
+                <AlertDialogTitle>Delete &quot;{initial?.name}&quot;?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This removes the brand record. Uploaded files stay in Storage. The Figma plugin
                   will stop returning this brand immediately.
