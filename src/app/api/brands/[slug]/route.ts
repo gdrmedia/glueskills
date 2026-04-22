@@ -57,11 +57,18 @@ export async function PATCH(req: NextRequest, { params }: RouteCtx) {
   const supabaseToken = await getToken({ template: "supabase" });
   const supabase = createSupabaseClient(supabaseToken ?? undefined);
 
-  const { error } = await supabase.from("brands").update(parsed.data).eq("slug", slug);
+  const { data, error } = await supabase
+    .from("brands")
+    .update(parsed.data)
+    .eq("slug", slug)
+    .select("slug");
 
   if (error) {
     console.error("brand update failed:", error);
     return NextResponse.json({ error: "Failed to update brand" }, { status: 500 });
+  }
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true });
@@ -77,11 +84,18 @@ export async function DELETE(_req: NextRequest, { params }: RouteCtx) {
   const supabaseToken = await getToken({ template: "supabase" });
   const supabase = createSupabaseClient(supabaseToken ?? undefined);
 
-  const { error } = await supabase.from("brands").delete().eq("slug", slug);
+  const { data, error } = await supabase
+    .from("brands")
+    .delete()
+    .eq("slug", slug)
+    .select("slug");
 
   if (error) {
     console.error("brand delete failed:", error);
     return NextResponse.json({ error: "Failed to delete brand" }, { status: 500 });
+  }
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true });

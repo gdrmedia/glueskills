@@ -880,8 +880,12 @@ const mockDelete = vi.fn();
 
 const mockFrom = vi.fn(() => ({
   select: () => ({ eq: () => ({ maybeSingle: () => mockSingle() }) }),
-  update: (...a: unknown[]) => ({ eq: () => mockUpdate(...a) }),
-  delete: () => ({ eq: () => mockDelete() }),
+  update: (payload: unknown) => ({
+    eq: (col: string, val: unknown) => ({ select: () => mockUpdate(payload, col, val) }),
+  }),
+  delete: () => ({
+    eq: (col: string, val: unknown) => ({ select: () => mockDelete(col, val) }),
+  }),
 }));
 vi.mock("@/lib/supabase/client", () => ({
   createSupabaseClient: () => ({ from: mockFrom }),
@@ -898,6 +902,8 @@ beforeEach(() => {
   vi.clearAllMocks();
   mockGetToken.mockResolvedValue("fake.jwt.token");
   vi.mocked(auth).mockResolvedValue({ userId: "user_1", getToken: mockGetToken } as never);
+  mockUpdate.mockResolvedValue({ data: [{ slug: "acme" }], error: null });
+  mockDelete.mockResolvedValue({ data: [{ slug: "acme" }], error: null });
 });
 
 describe("GET /api/brands/[slug]", () => {
@@ -942,14 +948,36 @@ describe("PATCH /api/brands/[slug]", () => {
   });
 
   it("updates and returns 200 on success", async () => {
-    mockUpdate.mockResolvedValue({ error: null });
     const req = new Request("http://x", {
       method: "PATCH",
       body: JSON.stringify({ name: "ACME Updated" }),
     }) as unknown as NextRequest;
     const res = await PATCH(req, ctx("acme"));
     expect(res.status).toBe(200);
-    expect(mockUpdate).toHaveBeenCalledWith({ name: "ACME Updated" });
+    expect(mockUpdate).toHaveBeenCalledWith({ name: "ACME Updated" }, "slug", "acme");
+  });
+
+  it("returns 400 on empty patch body {}", async () => {
+    const req = new Request("http://x", { method: "PATCH", body: "{}" }) as unknown as NextRequest;
+    expect((await PATCH(req, ctx("acme"))).status).toBe(400);
+  });
+
+  it("returns 404 when the slug does not exist", async () => {
+    mockUpdate.mockResolvedValue({ data: [], error: null });
+    const req = new Request("http://x", {
+      method: "PATCH",
+      body: JSON.stringify({ name: "New Name" }),
+    }) as unknown as NextRequest;
+    expect((await PATCH(req, ctx("nope"))).status).toBe(404);
+  });
+
+  it("returns 500 when the update fails", async () => {
+    mockUpdate.mockResolvedValue({ data: null, error: { message: "db down" } });
+    const req = new Request("http://x", {
+      method: "PATCH",
+      body: JSON.stringify({ name: "New Name" }),
+    }) as unknown as NextRequest;
+    expect((await PATCH(req, ctx("acme"))).status).toBe(500);
   });
 });
 
@@ -960,10 +988,19 @@ describe("DELETE /api/brands/[slug]", () => {
   });
 
   it("deletes and returns 200 on success", async () => {
-    mockDelete.mockResolvedValue({ error: null });
     const res = await DELETE({} as NextRequest, ctx("acme"));
     expect(res.status).toBe(200);
-    expect(mockDelete).toHaveBeenCalled();
+    expect(mockDelete).toHaveBeenCalledWith("slug", "acme");
+  });
+
+  it("returns 404 when the slug does not exist", async () => {
+    mockDelete.mockResolvedValue({ data: [], error: null });
+    expect((await DELETE({} as NextRequest, ctx("nope"))).status).toBe(404);
+  });
+
+  it("returns 500 when the delete fails", async () => {
+    mockDelete.mockResolvedValue({ data: null, error: { message: "db down" } });
+    expect((await DELETE({} as NextRequest, ctx("acme"))).status).toBe(500);
   });
 });
 ```
@@ -1037,11 +1074,18 @@ export async function PATCH(req: NextRequest, { params }: RouteCtx) {
   const supabaseToken = await getToken({ template: "supabase" });
   const supabase = createSupabaseClient(supabaseToken ?? undefined);
 
-  const { error } = await supabase.from("brands").update(parsed.data).eq("slug", slug);
+  const { data, error } = await supabase
+    .from("brands")
+    .update(parsed.data)
+    .eq("slug", slug)
+    .select("slug");
 
   if (error) {
     console.error("brand update failed:", error);
     return NextResponse.json({ error: "Failed to update brand" }, { status: 500 });
+  }
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true });
@@ -1057,11 +1101,18 @@ export async function DELETE(_req: NextRequest, { params }: RouteCtx) {
   const supabaseToken = await getToken({ template: "supabase" });
   const supabase = createSupabaseClient(supabaseToken ?? undefined);
 
-  const { error } = await supabase.from("brands").delete().eq("slug", slug);
+  const { data, error } = await supabase
+    .from("brands")
+    .delete()
+    .eq("slug", slug)
+    .select("slug");
 
   if (error) {
     console.error("brand delete failed:", error);
     return NextResponse.json({ error: "Failed to delete brand" }, { status: 500 });
+  }
+  if (!data || data.length === 0) {
+    return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
   return NextResponse.json({ ok: true });
