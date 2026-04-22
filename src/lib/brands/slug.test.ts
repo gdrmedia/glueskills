@@ -15,6 +15,19 @@ describe("toSlug", () => {
   it("returns '' for input that collapses to nothing", () => {
     expect(toSlug("   ---   ")).toBe("");
   });
+
+  it("strips diacritics via NFKD normalization", () => {
+    expect(toSlug("Café Déjà Vu")).toBe("cafe-deja-vu");
+    expect(toSlug("Ñoño")).toBe("nono");
+  });
+
+  it("truncates to MAX_SLUG_LENGTH and produces round-trip-valid output", () => {
+    const long = "The Extremely Long Official Company Name of Acme International Holdings LLC";
+    const slug = toSlug(long);
+    expect(slug.length).toBeLessThanOrEqual(60);
+    expect(slug.endsWith("-")).toBe(false);
+    expect(isValidSlug(slug)).toBe(true);
+  });
 });
 
 describe("isValidSlug", () => {

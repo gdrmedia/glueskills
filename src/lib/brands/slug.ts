@@ -5,7 +5,9 @@ export function toSlug(input: string): string {
     .replace(/[̀-ͯ]/g, "")        // strip accents
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
+    .replace(/^-|-$/g, "")
+    .slice(0, MAX_SLUG_LENGTH)
+    .replace(/-+$/, "");
 }
 
 const SLUG_RE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
