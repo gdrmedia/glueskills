@@ -9,7 +9,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           <Link href="/admin/brands" className="font-headline text-sm font-semibold">
             GlueSkills · Admin
           </Link>
-          <nav className="flex gap-4 text-sm text-muted-foreground">
+          <nav aria-label="Admin" className="flex gap-4 text-sm text-muted-foreground">
             <Link href="/admin/brands" className="hover:text-foreground">Brands</Link>
           </nav>
           <div className="ml-auto">

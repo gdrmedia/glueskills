@@ -3,13 +3,11 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { buttonVariants } from "@/components/ui/button";
+import type { BrandPack, BrandPalette } from "@/lib/brands/schema";
 import { Plus, Pencil } from "lucide-react";
 
-type BrandSummary = {
-  slug: string;
-  name: string;
-  logo_primary_url: string;
-  palette?: { primary: string; secondary: string; accent?: string; neutral?: string };
+type BrandSummary = Pick<BrandPack, "slug" | "name" | "logo_primary_url"> & {
+  palette?: BrandPalette;
 };
 
 async function fetchBrands(): Promise<BrandSummary[]> {
