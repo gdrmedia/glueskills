@@ -8,6 +8,7 @@ type PageProps = { params: Promise<{ slug: string }> };
 async function fetchBrand(slug: string): Promise<BrandPack | null> {
   const h = await headers();
   const host = h.get("host");
+  if (!host) throw new Error("Missing host header");
   const proto = h.get("x-forwarded-proto") ?? "http";
   const res = await fetch(`${proto}://${host}/api/brands/${slug}`, { cache: "no-store" });
   if (res.status === 404) return null;
