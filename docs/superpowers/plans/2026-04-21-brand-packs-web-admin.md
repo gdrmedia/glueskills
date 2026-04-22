@@ -185,8 +185,6 @@ create table if not exists brands (
   updated_at        timestamptz not null default now()
 );
 
-create index if not exists brands_slug_idx on brands (slug);
-
 -- updated_at trigger (no pre-existing pattern in this repo; introduced here).
 create or replace function set_updated_at()
 returns trigger
@@ -235,6 +233,7 @@ values ('brand-assets', 'brand-assets', true)
 on conflict (id) do nothing;
 
 -- Anyone can read (bucket is public; this is an explicit belt-and-braces policy).
+drop policy if exists "Public read on brand-assets" on storage.objects;
 create policy "Public read on brand-assets"
   on storage.objects for select
   using (bucket_id = 'brand-assets');
