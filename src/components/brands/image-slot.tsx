@@ -22,8 +22,12 @@ type Props = {
 export function ImageSlot({ slug, kind, label, required, value, labelValue, onChange, showLabelField }: Props) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  // Latest labelValue so handlePick sees edits made during the upload.
+  const labelValueRef = useRef(labelValue);
+  labelValueRef.current = labelValue;
 
   async function handlePick(file: File) {
+    if (uploading) return;
     if (!slug) {
       toast.error("Set a slug before uploading assets.");
       return;
@@ -31,7 +35,7 @@ export function ImageSlot({ slug, kind, label, required, value, labelValue, onCh
     setUploading(true);
     try {
       const { url } = await uploadBrandAsset(slug, kind, file);
-      onChange({ url, label: labelValue });
+      onChange({ url, label: labelValueRef.current });
       toast.success("Uploaded");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Upload failed";

@@ -32,9 +32,11 @@ export function ColorInput({ id, label, value, onChange, required, error }: Prop
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className="font-mono"
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
       </div>
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p id={`${id}-error`} className="text-xs text-destructive">{error}</p>}
     </div>
   );
 }
