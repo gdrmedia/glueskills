@@ -1154,12 +1154,14 @@ import { auth } from "@clerk/nextjs/server";
 import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { isValidSlug } from "@/lib/brands/slug";
 
-const ALLOWED_MIME = new Set([
+const ALLOWED_MIME_LIST = [
   "image/png",
   "image/jpeg",
   "image/webp",
   "image/svg+xml",
-]);
+] as const;
+type AllowedMime = (typeof ALLOWED_MIME_LIST)[number];
+const ALLOWED_MIME: ReadonlySet<string> = new Set(ALLOWED_MIME_LIST);
 const MAX_BYTES = 5 * 1024 * 1024;
 
 export type UploadKind =
@@ -1171,13 +1173,16 @@ export type UploadKind =
   | "image-3"
   | "image-4";
 
-function extFromMime(mime: string): string {
-  if (mime === "image/png") return "png";
-  if (mime === "image/jpeg") return "jpg";
-  if (mime === "image/webp") return "webp";
-  if (mime === "image/svg+xml") return "svg";
-  throw new Error("Unsupported mime");
-}
+const EXT_BY_MIME: Record<AllowedMime, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/svg+xml": "svg",
+};
+
+// Path allowlist for delete: `<slug>/(logo-primary|logo-alt|image-[0-4]).(png|jpg|webp|svg)`.
+// Prevents an authenticated admin from passing a traversal or cross-brand path.
+const DELETE_PATH_RE = /^[a-z0-9]+(-[a-z0-9]+)*\/(logo-(primary|alt)|image-[0-4])\.(png|jpg|webp|svg)$/;
 
 export async function uploadBrandAsset(
   slug: string,
@@ -1191,14 +1196,13 @@ export async function uploadBrandAsset(
   if (!ALLOWED_MIME.has(file.type)) throw new Error("Unsupported file type");
   if (file.size > MAX_BYTES) throw new Error("File too large (max 5 MB)");
 
-  const ext = extFromMime(file.type);
+  const ext = EXT_BY_MIME[file.type as AllowedMime];
   const path = `${slug}/${kind}.${ext}`;
 
   const admin = createSupabaseAdminClient();
-  const bytes = new Uint8Array(await file.arrayBuffer());
   const { error } = await admin.storage
     .from("brand-assets")
-    .upload(path, bytes, {
+    .upload(path, file, {
       contentType: file.type,
       upsert: true,
     });
@@ -1214,6 +1218,8 @@ export async function uploadBrandAsset(
 export async function deleteBrandAsset(path: string): Promise<void> {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
+
+  if (!DELETE_PATH_RE.test(path)) throw new Error("Invalid asset path");
 
   const admin = createSupabaseAdminClient();
   const { error } = await admin.storage.from("brand-assets").remove([path]);
