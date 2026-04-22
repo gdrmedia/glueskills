@@ -70,3 +70,27 @@ export type BannerJob = {
   expires_at: string;
   consumed_at: string | null;
 };
+
+export type Brand = {
+  id: string;
+  slug: string;
+  name: string;
+  palette: {
+    primary: string;
+    secondary: string;
+    accent?: string;
+    neutral?: string;
+  };
+  font: {
+    family: string;
+    fallback: string;
+    weights: { bold: string; semi: string; regular: string };
+  };
+  logo_primary_url: string;
+  logo_alt_url: string | null;
+  images:
+    | Array<{ url: string; label?: string; sort_order: number }>
+    | null;
+  created_at: string;
+  updated_at: string;
+};
