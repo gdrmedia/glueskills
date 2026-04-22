@@ -124,6 +124,7 @@ export function BrandForm({ mode, initial }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitting) return;
 
     const payload = buildPayload();
     const parsed = brandPackInputSchema.safeParse(payload);
@@ -147,6 +148,7 @@ export function BrandForm({ mode, initial }: Props) {
           return;
         }
         toast.success("Brand created");
+        router.refresh();
         router.push(`/admin/brands/${parsed.data.slug}`);
       } else {
         const res = await fetch(`/api/brands/${initial!.slug}`, {
