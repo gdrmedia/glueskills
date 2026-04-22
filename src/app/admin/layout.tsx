@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
@@ -20,6 +21,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+      <Toaster />
     </div>
   );
 }
