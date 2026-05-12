@@ -15,6 +15,7 @@ import {
   Fingerprint,
   ImageDown,
   FileImage,
+  FileSpreadsheet,
   Palette,
   RulerDimensionLine,
   Contrast,
@@ -25,6 +26,7 @@ import {
   BookOpen,
   Mail,
   LayoutGrid,
+  LayoutPanelLeft,
   FileText,
   Users,
   UserCircle,
@@ -78,6 +80,53 @@ const allTools: ToolEntry[] = [
   { href: "/dashboard/seo/meta-tags", label: "Meta Tag Preview", description: "Preview how your page looks on Google and social media", icon: Tags, section: "SEO", sectionColor: "text-rose-500", iconBg: "bg-rose-500/12", iconText: "text-rose-600" },
   { href: "/dashboard/seo/schema-generator", label: "Schema Generator", description: "Generate JSON-LD for Article, FAQ, Product, and more", icon: Braces, section: "SEO", sectionColor: "text-rose-500", iconBg: "bg-rose-500/12", iconText: "text-rose-600" },
   { href: "/dashboard/seo/og-debugger", label: "OG Debugger", description: "See how your URL renders on Facebook, Twitter, and Google", icon: Eye, section: "SEO", sectionColor: "text-rose-500", iconBg: "bg-rose-500/12", iconText: "text-rose-600" },
+];
+
+/* ── Featured workflows ── */
+
+interface FeaturedWorkflow {
+  href: string;
+  label: string;
+  description: string;
+  icon: LucideIcon;
+  iconBg: string;
+  iconText: string;
+  headerGradient: string;
+  chipBg: string;
+  chipText: string;
+  btnGradient: string;
+  steps: string[];
+}
+
+const featuredWorkflows: FeaturedWorkflow[] = [
+  {
+    href: "/dashboard/designer/banner-resizer",
+    label: "Banner Resizer",
+    description:
+      "Resize a banner across dozens of campaign sizes — generate a code, paste it into the Figma plugin, and let it lay out every variant for you.",
+    icon: LayoutPanelLeft,
+    iconBg: "bg-purple-500/12",
+    iconText: "text-purple-600",
+    headerGradient: "from-purple-500/20 via-purple-500/8 to-transparent",
+    chipBg: "bg-purple-500/10",
+    chipText: "text-purple-700",
+    btnGradient: "from-purple-600 to-purple-400",
+    steps: ["Configure sizes", "Generate code", "Run in Figma"],
+  },
+  {
+    href: "/dashboard/strategist/spec-sheet-reviewer",
+    label: "Spec Sheet Reviewer",
+    description:
+      "Upload a campaign spec XLSX and get a polished, shareable viewer with sizes, file specs, and partner color cues auto-detected.",
+    icon: FileSpreadsheet,
+    iconBg: "bg-orange-500/12",
+    iconText: "text-orange-600",
+    headerGradient: "from-orange-500/20 via-orange-500/8 to-transparent",
+    chipBg: "bg-orange-500/10",
+    chipText: "text-orange-700",
+    btnGradient: "from-orange-600 to-orange-400",
+    steps: ["Upload XLSX", "Auto-enrich", "Share viewer"],
+  },
 ];
 
 /* ── Category cards ── */
@@ -256,9 +305,59 @@ export default function DashboardPage() {
         </div>
       </div>
 
+      {/* ── Featured workflows ── */}
+      <section className="space-y-5">
+        <div>
+          <h2 className="font-headline text-xl font-bold tracking-tight">Featured Workflows</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Bigger, multi-step tools you can hand off and share.
+          </p>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {featuredWorkflows.map((w) => (
+            <Link
+              key={w.href}
+              href={w.href}
+              prefetch={true}
+              className="group relative flex flex-col overflow-hidden rounded-2xl bg-card shadow-[0px_4px_20px_0px_rgba(44,47,48,0.05)] hover:-translate-y-1 hover:shadow-[0px_8px_30px_0px_rgba(44,47,48,0.08)] transition-all duration-300"
+            >
+              <div className={`h-20 bg-gradient-to-br ${w.headerGradient}`} />
+              <div className="px-7 pb-7 -mt-7 flex flex-1 flex-col">
+                <div className={`inline-flex h-14 w-14 items-center justify-center rounded-xl ${w.iconBg} ${w.iconText} ring-4 ring-card transition-all duration-300 group-hover:scale-110`}>
+                  <w.icon className="h-7 w-7" strokeWidth={1.75} />
+                </div>
+                <div className="mt-5">
+                  <div className="font-headline text-xl font-bold tracking-tight">{w.label}</div>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {w.description}
+                  </p>
+                </div>
+                <div className="mt-5 flex flex-wrap gap-1.5">
+                  {w.steps.map((step, i) => (
+                    <span key={i} className={`inline-flex items-center rounded-full ${w.chipBg} ${w.chipText} px-2.5 py-1 text-[11px] font-medium`}>
+                      {step}
+                    </span>
+                  ))}
+                </div>
+                <div className={`mt-6 flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-gradient-to-br ${w.btnGradient} text-white text-sm font-semibold transition-all duration-300 group-hover:shadow-md`}>
+                  Launch workflow <ArrowRight className="h-3.5 w-3.5" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       {/* ── Category cards ── */}
-      <div className="grid gap-6 sm:grid-cols-2">
-        {categories.map((cat) => (
+      <section className="space-y-5">
+        <div>
+          <h2 className="font-headline text-xl font-bold tracking-tight">Domains and Departments</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Browse tools grouped by craft.
+          </p>
+        </div>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {categories.map((cat) => (
           <Link
             key={cat.href}
             href={cat.href}
@@ -279,7 +378,8 @@ export default function DashboardPage() {
             </div>
           </Link>
         ))}
-      </div>
+        </div>
+      </section>
     </div>
   );
 }
