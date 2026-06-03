@@ -204,9 +204,11 @@ the UI hides/disables actions the user can't take (e.g. Approve shows only for t
 - **Last-write-wins**, optimistic UI. Header **save indicator**: `Saving… / Saved ✓ / Couldn't save —
   retry`. On failure the input stays in form state and retries; nothing is lost.
 - Per-section **"edited by X · 2m ago."**
-- **Soft conflict nudge** (no Realtime): the client remembers the `updated_at` it loaded; if a save
-  returns a newer server `updated_at` from someone else, show a "updated since you opened it — reload"
-  banner. Live co-editing can be added later behind the repository seam.
+- **Concurrency = section-level last-write-wins.** The PATCH route always re-reads the latest DB row
+  and merges the incoming section slice onto it, so two people editing *different* sections never
+  clobber each other. A live "someone else edited — reload" nudge is **deferred** (it edges into the
+  Realtime non-goal); for v1, a user simply sees others' changes on next load. Live co-editing /
+  nudge can be added later behind the repository seam.
 
 ---
 
