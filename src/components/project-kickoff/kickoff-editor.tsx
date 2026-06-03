@@ -40,20 +40,25 @@ export function KickoffEditor(
 
   function patchSection(sectionId: number, patch: SectionPatch) {
     const now = new Date().toISOString();
-    const merged = mergeSection(kickoff.sections, sectionId, patch, currentUserId, now);
-    setKickoff((k) => ({ ...k, sections: mergeSection(k.sections, sectionId, patch, currentUserId, now) }));
-    // Queue the FULL section slice (not just this field's delta) so debounced
-    // coalescing can never drop an earlier edit to the same section.
-    const full = merged[String(sectionId)];
-    autosave.queue({
-      section: sectionId,
-      patch: {
-        answers: full.answers,
-        approval: full.approval,
-        approval_notes: full.approval_notes,
-        owner: full.owner,
-        section_status: full.section_status,
-      },
+    setKickoff((k) => {
+      const sections = mergeSection(k.sections, sectionId, patch, currentUserId, now);
+      const full = sections[String(sectionId)];
+      // Queue the FULL section slice (not just this field's delta) built from the
+      // freshly-merged state, so debounced coalescing can never drop an earlier
+      // same-render edit to the same section. autosave.queue is idempotent-by-
+      // replacement, so it is safe to call inside the updater even if React
+      // double-invokes it (StrictMode / concurrent).
+      autosave.queue({
+        section: sectionId,
+        patch: {
+          answers: full.answers,
+          approval: full.approval,
+          approval_notes: full.approval_notes,
+          owner: full.owner,
+          section_status: full.section_status,
+        },
+      });
+      return { ...k, sections };
     });
   }
 
