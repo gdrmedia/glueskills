@@ -47,4 +47,36 @@ describe("supabase adapter", () => {
     const repo = makeSupabaseKickoffRepository(client as never);
     expect(await repo.get("missing")).toBeNull();
   });
+
+  it("update() returns the mapped fresh row", async () => {
+    const single = vi.fn().mockResolvedValue({ data: fakeRow({ status: "under_review" }), error: null });
+    const client = { from: () => ({ update: () => ({ eq: () => ({ select: () => ({ single }) }) }) }) };
+    const repo = makeSupabaseKickoffRepository(client as never);
+    const k = await repo.update("id1", { status: "under_review" });
+    expect(k.id).toBe("id1");
+    expect(k.status).toBe("under_review");
+  });
+
+  it("update() throws on error", async () => {
+    const single = vi.fn().mockResolvedValue({ data: null, error: { message: "boom" } });
+    const client = { from: () => ({ update: () => ({ eq: () => ({ select: () => ({ single }) }) }) }) };
+    const repo = makeSupabaseKickoffRepository(client as never);
+    await expect(repo.update("id1", { status: "approved" })).rejects.toBeTruthy();
+  });
+
+  it("softDelete() issues an update with deleted_at and resolves", async () => {
+    const eq = vi.fn().mockResolvedValue({ error: null });
+    const update = vi.fn(() => ({ eq }));
+    const client = { from: () => ({ update }) };
+    const repo = makeSupabaseKickoffRepository(client as never);
+    await expect(repo.softDelete("id1")).resolves.toBeUndefined();
+    expect(update).toHaveBeenCalledWith(expect.objectContaining({ deleted_at: expect.any(String) }));
+  });
+
+  it("softDelete() throws on error", async () => {
+    const eq = vi.fn().mockResolvedValue({ error: { message: "boom" } });
+    const client = { from: () => ({ update: () => ({ eq }) }) };
+    const repo = makeSupabaseKickoffRepository(client as never);
+    await expect(repo.softDelete("id1")).rejects.toBeTruthy();
+  });
 });

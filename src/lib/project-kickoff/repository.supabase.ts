@@ -6,7 +6,7 @@ import { progressOf } from "./validation";
 
 const TABLE = "project_kickoffs";
 
-type Row = Omit<Kickoff, never>; // DB row has the same field names as Kickoff
+type Row = Kickoff; // DB row has the same field names as Kickoff
 type SummaryRow = Pick<Kickoff, "id" | "title" | "status" | "deliverables" | "sections" | "updated_at">;
 
 function rowToKickoff(r: Row): Kickoff {
