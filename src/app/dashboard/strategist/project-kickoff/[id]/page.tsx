@@ -3,6 +3,7 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { getAuthedRepo } from "@/lib/project-kickoff/authed-repo";
 import { canApprove } from "@/lib/project-kickoff/config";
 import { KickoffEditor } from "@/components/project-kickoff/kickoff-editor";
+import { KickoffDocument } from "@/components/project-kickoff/kickoff-document";
 import type { User } from "@clerk/backend";
 
 function resolveDisplayName(user: User): string {
@@ -22,11 +23,13 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
   const kickoff = await ctx.repo.get(id);
   if (!kickoff) notFound();
 
-  // Collect distinct user ids to resolve: current user + all last_edited_by values
+  // Collect distinct user ids to resolve: current user + last_edited_by + submitted_by + approved_by
   const editorIdSet = new Set<string>([ctx.userId]);
   for (const sd of Object.values(kickoff.sections)) {
     if (sd?.last_edited_by) editorIdSet.add(sd.last_edited_by);
   }
+  if (kickoff.submitted_by) editorIdSet.add(kickoff.submitted_by);
+  if (kickoff.approved_by) editorIdSet.add(kickoff.approved_by);
   const editorIds = Array.from(editorIdSet);
 
   const editorNames: Record<string, string> = {};
@@ -39,6 +42,16 @@ export default async function Page({ params }: { params: Promise<{ id: string }>
     }
   } catch {
     // Non-fatal: UI falls back to raw id
+  }
+
+  if (kickoff.status === "under_review" || kickoff.status === "approved") {
+    return (
+      <KickoffDocument
+        kickoff={kickoff}
+        editorNames={editorNames}
+        isApprover={canApprove(ctx.userId)}
+      />
+    );
   }
 
   return (
