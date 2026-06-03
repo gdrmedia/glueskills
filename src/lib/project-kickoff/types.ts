@@ -14,13 +14,9 @@ export interface FieldDef {
   required: boolean;
 }
 
-export interface SectionDef {
-  id: number; // 1..7
-  title: string;
-  always: boolean; // §1,2,3,7
-  deliverable?: DeliverableKey; // §4,5,6
-  fields: FieldDef[];
-}
+export type SectionDef =
+  | { id: number; title: string; always: true; fields: FieldDef[] }
+  | { id: number; title: string; always: false; deliverable: DeliverableKey; fields: FieldDef[] };
 
 export interface SectionData {
   answers: Record<string, string>;

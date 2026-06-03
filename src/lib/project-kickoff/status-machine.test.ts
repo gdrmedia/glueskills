@@ -15,6 +15,10 @@ describe("applyTransition", () => {
     expect(applyTransition("submit", { status: "approved", isApprover: false, requiredComplete: true }).ok).toBe(false);
   });
 
+  it("submit: rejected from under_review (no double-submit)", () => {
+    expect(applyTransition("submit", { status: "under_review", isApprover: false, requiredComplete: true }).ok).toBe(false);
+  });
+
   it("approve: under_review → approved only for approver", () => {
     expect(applyTransition("approve", { status: "under_review", isApprover: true, requiredComplete: true }))
       .toMatchObject({ ok: true, nextStatus: "approved", locked: true });

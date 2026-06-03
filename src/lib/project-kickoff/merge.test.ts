@@ -13,8 +13,10 @@ describe("mergeSection", () => {
 
   it("does not mutate the input", () => {
     const before: Sections = { "2": emptySectionData() };
-    mergeSection(before, 2, { answers: { x: "y" } }, "user_x", "t");
+    const after = mergeSection(before, 2, { answers: { x: "y" } }, "user_x", "t");
     expect(before["2"].answers).toEqual({});
+    expect(before["2"]).not.toBe(after["2"]);
+    expect(before).not.toBe(after);
   });
 
   it("preserves sibling sections", () => {
@@ -34,6 +36,13 @@ describe("mergeSection", () => {
     s = mergeSection(s, 1, { answers: { a: "1" } }, "u", "t");
     s = mergeSection(s, 1, { answers: { b: "2" } }, "u", "t");
     expect(s["1"].answers).toEqual({ a: "1", b: "2" });
+  });
+
+  it("clears approval when patched to null", () => {
+    let s: Sections = { "1": emptySectionData() };
+    s = mergeSection(s, 1, { approval: "yes" }, "u", "t");
+    s = mergeSection(s, 1, { approval: null }, "u", "t");
+    expect(s["1"].approval).toBeNull();
   });
 });
 

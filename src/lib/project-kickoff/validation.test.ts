@@ -24,6 +24,10 @@ describe("activeSections", () => {
     const ids = activeSections({ ...noDeliverables, case_study: true }).map((s) => s.id);
     expect(ids).toEqual([1, 2, 3, 4, 7]);
   });
+  it("includes §5 for social and §6 for award", () => {
+    expect(activeSections({ case_study: false, social: true, award: false }).map((s) => s.id)).toEqual([1, 2, 3, 5, 7]);
+    expect(activeSections({ case_study: false, social: false, award: true }).map((s) => s.id)).toEqual([1, 2, 3, 6, 7]);
+  });
 });
 
 describe("missingRequired", () => {
