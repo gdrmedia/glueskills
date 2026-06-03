@@ -5,6 +5,7 @@ import { applyTransition } from "@/lib/project-kickoff/status-machine";
 import { isSubmittable, missingRequired } from "@/lib/project-kickoff/validation";
 import { canApprove } from "@/lib/project-kickoff/config";
 import type { KickoffUpdate } from "@/lib/project-kickoff/repository";
+import { notifyApproversOfSubmission } from "@/lib/project-kickoff/notify";
 
 type Ctx = { params: Promise<{ id: string }> };
 const bodySchema = z.object({ action: z.enum(["submit", "approve", "reopen"]) });
@@ -46,6 +47,18 @@ export async function POST(req: NextRequest, { params }: Ctx) {
     if (parsed.data.action === "approve") { patch.approved_by = ctx.userId; patch.approved_at = now; }
 
     const fresh = await ctx.repo.update(id, patch);
+
+    // Fire-and-forget approver notification. Awaited so the serverless function
+    // doesn't terminate mid-send, but notify self-catches so this never throws
+    // and never affects the response.
+    if (parsed.data.action === "submit") {
+      await notifyApproversOfSubmission({
+        kickoff: fresh,
+        submitterId: ctx.userId,
+        origin: new URL(req.url).origin,
+      });
+    }
+
     return NextResponse.json({ kickoff: fresh });
   } catch (e) {
     console.error("kickoff transition failed:", e);

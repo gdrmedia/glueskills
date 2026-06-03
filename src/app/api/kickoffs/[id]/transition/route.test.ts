@@ -11,6 +11,11 @@ vi.mock("@/lib/project-kickoff/repository.supabase", () => ({
 }));
 vi.mock("@/lib/supabase/client", () => ({ createSupabaseClient: () => ({}) }));
 
+const mockNotify = vi.fn();
+vi.mock("@/lib/project-kickoff/notify", () => ({
+  notifyApproversOfSubmission: (...args: unknown[]) => mockNotify(...args),
+}));
+
 import { POST } from "./route";
 import { auth } from "@clerk/nextjs/server";
 
@@ -84,5 +89,28 @@ describe("POST transition", () => {
 
   it("400 on unknown action", async () => {
     expect((await POST(body("frobnicate"), params)).status).toBe(400);
+  });
+
+  it("notifies both approvers on submit, with kickoff + submitter + origin", async () => {
+    await POST(body("submit"), params);
+    expect(mockNotify).toHaveBeenCalledTimes(1);
+    const arg = mockNotify.mock.calls[0][0];
+    expect(arg.kickoff.status).toBe("under_review");
+    expect(arg.kickoff.id).toBe("id1");
+    expect(arg.submitterId).toBe("user_a");
+    expect(arg.origin).toBe("http://x");
+  });
+
+  it("does NOT notify on approve", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "user_approver", getToken: mockGetToken } as never);
+    mockGet.mockResolvedValue({ ...draft, status: "under_review" });
+    await POST(body("approve"), params);
+    expect(mockNotify).not.toHaveBeenCalled();
+  });
+
+  it("does NOT notify on reopen", async () => {
+    mockGet.mockResolvedValue({ ...draft, status: "under_review", locked: true });
+    await POST(body("reopen"), params);
+    expect(mockNotify).not.toHaveBeenCalled();
   });
 });
