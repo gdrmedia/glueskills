@@ -215,8 +215,8 @@ export function KickoffDocument({
         </div>
       </div>
 
-      {/* Anchor nav */}
-      <nav className="border-b pb-0">
+      {/* Anchor nav — sticky so sections stay reachable while scrolling */}
+      <nav className="sticky top-0 z-20 border-b bg-background pt-2 pb-0">
         <div className="flex flex-wrap gap-x-6 gap-y-1">
           {navItems.map((item) => {
             const isActive = activeId === item.id;
