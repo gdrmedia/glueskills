@@ -11,16 +11,20 @@ import type { Kickoff } from "./types";
 
 const kickoff = { id: "k1", title: "Acme Launch" } as Kickoff;
 
-const USERS: Record<string, unknown> = {
-  user_sub: { firstName: "Sam", lastName: "Submitter", emailAddresses: [{ emailAddress: "sam@x.com" }] },
-  user_gui: { firstName: "Gui", lastName: "R", emailAddresses: [{ emailAddress: "gui@x.com" }] },
-  user_mon: { firstName: "Monica", lastName: "P", emailAddresses: [{ emailAddress: "monica@x.com" }] },
-};
+function makeUsers(): Record<string, unknown> {
+  return {
+    user_sub: { firstName: "Sam", lastName: "Submitter", emailAddresses: [{ emailAddress: "sam@x.com" }] },
+    user_gui: { firstName: "Gui", lastName: "R", emailAddresses: [{ emailAddress: "gui@x.com" }] },
+    user_mon: { firstName: "Monica", lastName: "P", emailAddresses: [{ emailAddress: "monica@x.com" }] },
+  };
+}
+let USERS: Record<string, unknown>;
 
 let fetchMock: ReturnType<typeof vi.fn>;
 
 beforeEach(() => {
   vi.clearAllMocks();
+  USERS = makeUsers();
   process.env.KICKOFF_APPROVER_IDS = "user_gui,user_mon";
   process.env.RESEND_API_KEY = "re_test";
   mockGetUser.mockImplementation(async (id: string) => USERS[id]);
@@ -61,5 +65,17 @@ describe("notifyApproversOfSubmission", () => {
     USERS.user_mon = { emailAddresses: [] };
     await notifyApproversOfSubmission({ kickoff, submitterId: "user_sub", origin: "https://app.test" });
     expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("falls back to a generic name when the submitter lookup throws, and still sends", async () => {
+    mockGetUser.mockImplementation(async (id: string) => {
+      if (id === "user_sub") throw new Error("clerk unavailable");
+      return USERS[id];
+    });
+    await notifyApproversOfSubmission({ kickoff, submitterId: "user_sub", origin: "https://app.test" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const sent = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(sent.text).toContain("A teammate");
+    expect(sent.to).toEqual(["gui@x.com", "monica@x.com"]);
   });
 });

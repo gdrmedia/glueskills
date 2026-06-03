@@ -2,6 +2,17 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { approverIds } from "./config";
 import type { Kickoff } from "./types";
 
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// Mirror of the kickoff document-view route in src/app/dashboard/strategist/project-kickoff/[id].
+const KICKOFF_REVIEW_PATH = "/dashboard/strategist/project-kickoff";
+
 interface NotifyArgs {
   kickoff: Kickoff;
   submitterId: string;
@@ -50,10 +61,10 @@ export async function notifyApproversOfSubmission({
       return;
     }
 
-    const link = `${origin}/dashboard/strategist/project-kickoff/${kickoff.id}`;
+    const link = `${origin}${KICKOFF_REVIEW_PATH}/${kickoff.id}`;
     const subject = `[GlueSkills] "${kickoff.title}" submitted for review`;
     const text = `${submitterName} submitted the kickoff brief "${kickoff.title}" for review.\n\nReview it here: ${link}`;
-    const html = `<p>${submitterName} submitted the kickoff brief <strong>&quot;${kickoff.title}&quot;</strong> for review.</p><p><a href="${link}">Open the brief</a></p>`;
+    const html = `<p>${escapeHtml(submitterName)} submitted the kickoff brief <strong>&quot;${escapeHtml(kickoff.title)}&quot;</strong> for review.</p><p><a href="${link}">Open the brief</a></p>`;
 
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
