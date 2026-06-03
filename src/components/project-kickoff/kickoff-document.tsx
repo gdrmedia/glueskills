@@ -220,7 +220,7 @@ export function KickoffDocument({
           px, so the solid white bar spans the full width and hides content scrolling
           beneath it. No negative top-margin (that shifted the pinned position and
           overlapped the title); a plain `top-0` pins it flush below the header. */}
-      <nav className="sticky top-16 z-20 -mx-6 border-b bg-card md:-mx-8">
+      <nav className="sticky -top-8 z-20 -mx-6 border-b bg-card md:-mx-8">
         <div className="flex flex-wrap gap-x-6 gap-y-1 px-6 py-3 md:px-8">
           {navItems.map((item) => {
             const isActive = activeId === item.id;
