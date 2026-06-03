@@ -13,7 +13,7 @@ vi.mock("@/lib/supabase/client", () => ({ createSupabaseClient: () => ({}) }));
 
 const mockNotify = vi.fn();
 vi.mock("@/lib/project-kickoff/notify", () => ({
-  notifyApproversOfSubmission: (...args: unknown[]) => mockNotify(...args),
+  notifyApproversOfSubmission: (...args: unknown[]) => Promise.resolve(mockNotify(...args)),
 }));
 
 import { POST } from "./route";
