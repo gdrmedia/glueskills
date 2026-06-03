@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
-import { createSupabaseClient } from "@/lib/supabase/client";
-import { makeSupabaseKickoffRepository } from "@/lib/project-kickoff/repository.supabase";
+import { getAuthedRepo } from "@/lib/project-kickoff/authed-repo";
 import { applyTransition } from "@/lib/project-kickoff/status-machine";
 import { isSubmittable, missingRequired } from "@/lib/project-kickoff/validation";
 import { canApprove } from "@/lib/project-kickoff/config";
@@ -12,8 +10,8 @@ type Ctx = { params: Promise<{ id: string }> };
 const bodySchema = z.object({ action: z.enum(["submit", "approve", "reopen"]) });
 
 export async function POST(req: NextRequest, { params }: Ctx) {
-  const { userId, getToken } = await auth();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const ctx = await getAuthedRepo();
+  if (!ctx) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
   let raw: unknown;
@@ -21,16 +19,13 @@ export async function POST(req: NextRequest, { params }: Ctx) {
   const parsed = bodySchema.safeParse(raw);
   if (!parsed.success) return NextResponse.json({ error: "Invalid action" }, { status: 400 });
 
-  const token = await getToken({ template: "supabase" });
-  const repo = makeSupabaseKickoffRepository(createSupabaseClient(token ?? undefined));
-
   try {
-    const current = await repo.get(id);
+    const current = await ctx.repo.get(id);
     if (!current) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
     const result = applyTransition(parsed.data.action, {
       status: current.status,
-      isApprover: canApprove(userId),
+      isApprover: canApprove(ctx.userId),
       requiredComplete: isSubmittable(current.deliverables, current.sections),
     });
 
@@ -47,10 +42,10 @@ export async function POST(req: NextRequest, { params }: Ctx) {
 
     const now = new Date().toISOString();
     const patch: KickoffUpdate = { status: result.nextStatus, locked: result.locked };
-    if (parsed.data.action === "submit") { patch.submitted_by = userId; patch.submitted_at = now; }
-    if (parsed.data.action === "approve") { patch.approved_by = userId; patch.approved_at = now; }
+    if (parsed.data.action === "submit") { patch.submitted_by = ctx.userId; patch.submitted_at = now; }
+    if (parsed.data.action === "approve") { patch.approved_by = ctx.userId; patch.approved_at = now; }
 
-    const fresh = await repo.update(id, patch);
+    const fresh = await ctx.repo.update(id, patch);
     return NextResponse.json({ kickoff: fresh });
   } catch (e) {
     console.error("kickoff transition failed:", e);

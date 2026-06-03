@@ -1,18 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
-import { createSupabaseClient } from "@/lib/supabase/client";
-import { makeSupabaseKickoffRepository } from "@/lib/project-kickoff/repository.supabase";
+import { getAuthedRepo } from "@/lib/project-kickoff/authed-repo";
 import type { ListTab } from "@/lib/project-kickoff/repository";
 
-async function authedRepo() {
-  const { userId, getToken } = await auth();
-  if (!userId) return null;
-  const token = await getToken({ template: "supabase" });
-  return { userId, repo: makeSupabaseKickoffRepository(createSupabaseClient(token ?? undefined)) };
-}
-
 export async function GET(req: NextRequest) {
-  const ctx = await authedRepo();
+  const ctx = await getAuthedRepo();
   if (!ctx) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const raw = new URL(req.url).searchParams.get("tab");
   const tab: ListTab = raw === "approved" ? "approved" : "active";
@@ -26,7 +17,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST() {
-  const ctx = await authedRepo();
+  const ctx = await getAuthedRepo();
   if (!ctx) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const id = await ctx.repo.create(ctx.userId);

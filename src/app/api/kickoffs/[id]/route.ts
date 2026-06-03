@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
-import { createSupabaseClient } from "@/lib/supabase/client";
-import { makeSupabaseKickoffRepository } from "@/lib/project-kickoff/repository.supabase";
+import { getAuthedRepo } from "@/lib/project-kickoff/authed-repo";
 import { mergeSection } from "@/lib/project-kickoff/merge";
 import type { KickoffUpdate } from "@/lib/project-kickoff/repository";
 
 type Ctx = { params: Promise<{ id: string }> };
-
-async function authedRepo() {
-  const { userId, getToken } = await auth();
-  if (!userId) return null;
-  const token = await getToken({ template: "supabase" });
-  return { userId, repo: makeSupabaseKickoffRepository(createSupabaseClient(token ?? undefined)) };
-}
 
 const sectionPatchSchema = z.object({
   answers: z.record(z.string(), z.string()).optional(),
@@ -34,7 +25,7 @@ const patchSchema = z.object({
 });
 
 export async function GET(_req: NextRequest, { params }: Ctx) {
-  const ctx = await authedRepo();
+  const ctx = await getAuthedRepo();
   if (!ctx) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   try {
@@ -48,7 +39,7 @@ export async function GET(_req: NextRequest, { params }: Ctx) {
 }
 
 export async function PATCH(req: NextRequest, { params }: Ctx) {
-  const ctx = await authedRepo();
+  const ctx = await getAuthedRepo();
   if (!ctx) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
 
@@ -75,6 +66,10 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
       }
     }
 
+    if (Object.keys(update).length === 0) {
+      return NextResponse.json({ updated_at: current.updated_at, kickoff: current });
+    }
+
     const fresh = await ctx.repo.update(id, update);
     return NextResponse.json({ updated_at: fresh.updated_at, kickoff: fresh });
   } catch (e) {
@@ -84,7 +79,7 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 }
 
 export async function DELETE(_req: NextRequest, { params }: Ctx) {
-  const ctx = await authedRepo();
+  const ctx = await getAuthedRepo();
   if (!ctx) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const { id } = await params;
   try {

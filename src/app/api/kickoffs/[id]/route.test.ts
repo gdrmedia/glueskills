@@ -78,6 +78,11 @@ describe("PATCH /api/kickoffs/[id]", () => {
   it("400 on malformed body", async () => {
     expect((await PATCH(patchReq({ section: 99, patch: {} }), params)).status).toBe(400);
   });
+  it("no-ops on an empty body (no DB write)", async () => {
+    const res = await PATCH(patchReq({}), params);
+    expect(res.status).toBe(200);
+    expect(mockUpdate).not.toHaveBeenCalled();
+  });
 });
 
 describe("DELETE /api/kickoffs/[id]", () => {
