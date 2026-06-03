@@ -1,7 +1,7 @@
 "use client";
 
 import { ToolGrid } from "@/components/dashboard/tool-grid";
-import { LayoutGrid, FileText, Users, UserCircle, Calculator, FileSpreadsheet } from "lucide-react";
+import { LayoutGrid, FileText, Users, UserCircle, Calculator, FileSpreadsheet, ClipboardList } from "lucide-react";
 
 const tools = [
   {
@@ -39,6 +39,12 @@ const tools = [
     label: "Banner Spec Sheet Reviewer",
     description: "Turn a messy Excel media spec sheet into a shareable web viewer",
     icon: FileSpreadsheet,
+  },
+  {
+    href: "/dashboard/strategist/project-kickoff",
+    label: "Creative Kickoff Brief",
+    description: "Capture, hand off, and approve project kickoff briefs with autosave",
+    icon: ClipboardList,
   },
 ];
 
