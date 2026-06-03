@@ -216,8 +216,13 @@ export function KickoffDocument({
       </div>
 
       {/* Anchor nav — sticky so sections stay reachable while scrolling */}
-      <nav className="sticky top-0 z-20 border-b bg-background pt-2 pb-0">
-        <div className="flex flex-wrap gap-x-6 gap-y-1">
+      {/* -mt-8! pulls the nav up into main's py-8 top padding so the white bg covers
+          the scroll-through gap; pt-8 re-insets the items to the natural position.
+          -mx-6 md:-mx-8 + px-6 md:px-8 bleed the bar to full content width so no
+          gray gutters show on either side when pinned. bg-card (white) replaces the
+          gray bg-background. shadow-sm + border-b give it a clean separator. */}
+      <nav className="sticky top-0 z-20 -mt-8! -mx-6 md:-mx-8 border-b bg-card shadow-sm pt-8 pb-0">
+        <div className="flex flex-wrap gap-x-6 gap-y-1 px-6 md:px-8 py-3">
           {navItems.map((item) => {
             const isActive = activeId === item.id;
             return (
