@@ -27,7 +27,11 @@ export function ApprovalControl({ approval, notes, readOnly, onApproval, onNotes
             const active = approval === o.value;
             return (
               <button key={o.value} type="button" disabled={readOnly} aria-pressed={active}
-                onClick={() => onApproval(active ? null : o.value)}
+                onClick={() => {
+                  const next = active ? null : o.value;
+                  onApproval(next);
+                  if (next === "no") onNotes(""); // clear notes — a brief needing no approval carries none
+                }}
                 className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                   active ? "bg-amber-500 text-white" : "bg-white text-foreground hover:bg-amber-100 dark:bg-background"
                 } disabled:opacity-60`}>
