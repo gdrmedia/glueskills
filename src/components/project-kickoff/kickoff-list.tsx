@@ -8,6 +8,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useKickoffList, useCreateKickoff } from "@/lib/project-kickoff/queries";
 import type { Deliverables, KickoffStatus } from "@/lib/project-kickoff/types";
+import type { ListTab } from "@/lib/project-kickoff/repository";
 
 const STATUS_LABEL: Record<KickoffStatus, string> = {
   draft: "Draft", under_review: "Under review", approved: "Approved",
@@ -20,7 +21,7 @@ function deliverableChips(d: Deliverables) {
 
 export function KickoffList() {
   const router = useRouter();
-  const [tab, setTab] = useState<"active" | "approved">("active");
+  const [tab, setTab] = useState<ListTab>("drafts");
   const { data, isLoading } = useKickoffList(tab);
   const create = useCreateKickoff();
 
@@ -39,9 +40,10 @@ export function KickoffList() {
         <Button onClick={newBrief} disabled={create.isPending}><Plus className="h-4 w-4" /> New brief</Button>
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as "active" | "approved")}>
+      <Tabs value={tab} onValueChange={(v) => setTab(v as ListTab)}>
         <TabsList>
-          <TabsTrigger value="active">Active</TabsTrigger>
+          <TabsTrigger value="drafts">Drafts</TabsTrigger>
+          <TabsTrigger value="under_review">Under review</TabsTrigger>
           <TabsTrigger value="approved">Approved</TabsTrigger>
         </TabsList>
       </Tabs>
@@ -50,7 +52,7 @@ export function KickoffList() {
         <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)}</div>
       ) : !data?.length ? (
         <div className="rounded-2xl bg-card p-10 text-center text-muted-foreground">
-          {tab === "active" ? "No active briefs yet. Create one to get started." : "No approved briefs yet."}
+          {{ drafts: "No drafts yet. Create one to get started.", under_review: "No briefs under review.", approved: "No approved briefs yet." }[tab]}
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl bg-card shadow-sm">

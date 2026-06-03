@@ -23,7 +23,8 @@ function rowToKickoff(r: Row): Kickoff {
 export function makeSupabaseKickoffRepository(client: SupabaseClient): KickoffRepository {
   return {
     async list(tab: ListTab): Promise<KickoffSummary[]> {
-      const statuses = tab === "approved" ? ["approved"] : ["draft", "under_review"];
+      const STATUS_BY_TAB = { drafts: ["draft"], under_review: ["under_review"], approved: ["approved"] } as const;
+      const statuses = STATUS_BY_TAB[tab];
       const { data, error } = await client
         .from(TABLE)
         .select("id, title, status, deliverables, sections, updated_at")

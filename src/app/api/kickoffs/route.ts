@@ -6,7 +6,7 @@ export async function GET(req: NextRequest) {
   const ctx = await getAuthedRepo();
   if (!ctx) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const raw = new URL(req.url).searchParams.get("tab");
-  const tab: ListTab = raw === "approved" ? "approved" : "active";
+  const tab: ListTab = raw === "approved" || raw === "under_review" ? raw : "drafts";
   try {
     const kickoffs = await ctx.repo.list(tab);
     return NextResponse.json({ kickoffs });

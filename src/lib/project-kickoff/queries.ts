@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Kickoff, KickoffSummary, Deliverables } from "./types";
 import type { TransitionAction } from "./status-machine";
 import type { SectionPatch } from "./merge";
+import type { ListTab } from "./repository";
 
 async function jsonOrThrow(res: Response) {
   if (!res.ok) {
@@ -12,7 +13,7 @@ async function jsonOrThrow(res: Response) {
   return res.json();
 }
 
-export function useKickoffList(tab: "active" | "approved") {
+export function useKickoffList(tab: ListTab) {
   return useQuery({
     queryKey: ["kickoffs", tab],
     queryFn: async (): Promise<KickoffSummary[]> =>

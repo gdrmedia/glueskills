@@ -1,6 +1,6 @@
 import type { Kickoff, KickoffSummary } from "./types";
 
-export type ListTab = "active" | "approved";
+export type ListTab = "drafts" | "under_review" | "approved";
 
 /** Persistence seam. Reimplement this one file to move platforms. */
 export interface KickoffRepository {

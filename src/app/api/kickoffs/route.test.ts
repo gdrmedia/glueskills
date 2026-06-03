@@ -38,9 +38,13 @@ describe("GET /api/kickoffs", () => {
     expect(mockList).toHaveBeenCalledWith("approved");
     expect((await res.json()).kickoffs).toHaveLength(1);
   });
-  it("defaults to active for an unknown tab", async () => {
+  it("defaults to drafts for an unknown tab", async () => {
     await GET(req("http://x/api/kickoffs?tab=garbage"));
-    expect(mockList).toHaveBeenCalledWith("active");
+    expect(mockList).toHaveBeenCalledWith("drafts");
+  });
+  it("returns list for under_review tab", async () => {
+    await GET(req("http://x/api/kickoffs?tab=under_review"));
+    expect(mockList).toHaveBeenCalledWith("under_review");
   });
 });
 

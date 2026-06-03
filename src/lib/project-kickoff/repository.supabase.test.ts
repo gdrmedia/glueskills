@@ -30,7 +30,7 @@ describe("supabase adapter", () => {
       from: () => ({ select: () => ({ in: () => ({ is: () => ({ order }) }) }) }),
     };
     const repo = makeSupabaseKickoffRepository(client as never);
-    const rows = await repo.list("active");
+    const rows = await repo.list("drafts");
     expect(rows[0].progress).toEqual({ done: 1, total: 5 }); // §1,2,3,4,7 active; §1 done
   });
 
