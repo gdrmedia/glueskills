@@ -22,6 +22,40 @@ describe("KICKOFF_FORM", () => {
     expect(new Set(keys).size).toBe(keys.length);
   });
 
+  it("includes the production-spec fields on each deliverable section", () => {
+    const keysOf = (id: number) =>
+      KICKOFF_FORM.find((s) => s.id === id)!.fields.map((f) => f.key);
+
+    expect(keysOf(4)).toEqual(
+      expect.arrayContaining([
+        "case_link_assets", "case_format_specs", "case_quantity", "case_delivery",
+      ])
+    );
+    expect(keysOf(5)).toEqual(
+      expect.arrayContaining([
+        "social_link_assets", "social_format_specs", "social_quantity",
+        "social_usage_context", "social_delivery",
+      ])
+    );
+    expect(keysOf(6)).toEqual(
+      expect.arrayContaining([
+        "award_link_assets", "award_format_specs", "award_delivery",
+      ])
+    );
+
+    // production-spec fields stay optional
+    const specKeys = [
+      "case_link_assets", "case_format_specs", "case_quantity", "case_delivery",
+      "social_link_assets", "social_format_specs", "social_quantity",
+      "social_usage_context", "social_delivery",
+      "award_link_assets", "award_format_specs", "award_delivery",
+    ];
+    const required = KICKOFF_FORM.flatMap((s) =>
+      s.fields.filter((f) => f.required).map((f) => f.key)
+    );
+    for (const k of specKeys) expect(required).not.toContain(k);
+  });
+
   it("marks the known required fields", () => {
     const required = KICKOFF_FORM.flatMap((s) =>
       s.fields.filter((f) => f.required).map((f) => f.key)

@@ -42,6 +42,10 @@ export const KICKOFF_FORM: SectionDef[] = [
       area("case_audience", "Who is the case study written for?"),
       area("case_quotes", "What quotes or client testimonials are available?"),
       area("case_assets", "What visual assets are available for the case study?"),
+      area("case_link_assets", "Link to assets/copy to use"),
+      area("case_format_specs", "File format + specs"),
+      text("case_quantity", "Quantity"),
+      area("case_delivery", "Delivery method + deadline"),
     ],
   },
   {
@@ -53,6 +57,11 @@ export const KICKOFF_FORM: SectionDef[] = [
       area("social_goal", "What do we want people to feel or do after seeing the post?"),
       area("social_credits", "Are there any credits, tags, or handles to include?"),
       area("social_timing", "Any post timing, campaign tie-ins, or industry events to align with?"),
+      area("social_link_assets", "Link to assets/copy to use"),
+      area("social_format_specs", "File format + specs"),
+      text("social_quantity", "Quantity"),
+      area("social_usage_context", "Platform / usage context"),
+      area("social_delivery", "Delivery method + deadline"),
     ],
   },
   {
@@ -64,6 +73,9 @@ export const KICKOFF_FORM: SectionDef[] = [
       area("award_worthy", "What is the single most award-worthy thing about this work?"),
       area("award_benchmarks", "Are there competitive or industry benchmarks to reference?"),
       area("award_limit", "What is the entry word / character limit?"),
+      area("award_link_assets", "Link to assets/copy to use"),
+      area("award_format_specs", "File format + specs"),
+      area("award_delivery", "Delivery method + deadline"),
     ],
   },
   {
