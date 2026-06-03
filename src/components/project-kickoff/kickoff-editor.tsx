@@ -19,8 +19,8 @@ const STATUS_LABEL: Record<Kickoff["status"], string> = {
 };
 
 export function KickoffEditor(
-  { initial, currentUserId, isApprover }:
-  { initial: Kickoff; currentUserId: string; isApprover: boolean }
+  { initial, currentUserId, isApprover, editorNames }:
+  { initial: Kickoff; currentUserId: string; isApprover: boolean; editorNames: Record<string, string> }
 ) {
   const router = useRouter();
   const [kickoff, setKickoff] = useState<Kickoff>(initial);
@@ -58,7 +58,11 @@ export function KickoffEditor(
           section_status: full.section_status,
         },
       });
-      return { ...k, sections };
+      const nextTitle =
+        sectionId === 1 && patch.answers && "campaign_name" in patch.answers
+          ? (patch.answers.campaign_name as string).trim() || "Untitled brief"
+          : k.title;
+      return { ...k, sections, title: nextTitle };
     });
   }
 
@@ -120,6 +124,7 @@ export function KickoffEditor(
             }}
               open={openId === s.id} readOnly={readOnly}
               missingKeys={missingBySection[s.id] ?? new Set()}
+              editorNames={editorNames}
               onToggleOpen={() => setOpenId(openId === s.id ? -1 : s.id)}
               onPatch={(p) => patchSection(s.id, p)} />
           ))}

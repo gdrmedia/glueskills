@@ -9,8 +9,8 @@ export const KICKOFF_FORM: SectionDef[] = [
   {
     id: 1, title: "Campaign Overview", always: true,
     fields: [
-      text("client_brand", "Client / brand name", true),
       text("campaign_name", "Campaign / project name", true),
+      text("client_brand", "Client / brand name", true),
       text("industry", "Industry / category", true),
       area("campaign_summary", "In one sentence, what did this campaign do?", true),
       area("business_problem", "What was the business problem or opportunity?", true),

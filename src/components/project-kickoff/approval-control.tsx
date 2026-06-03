@@ -39,7 +39,7 @@ export function ApprovalControl({ approval, notes, readOnly, onApproval, onNotes
       </div>
       <div className="space-y-1.5">
         <Label htmlFor="ck-approval-notes" className="text-sm">Approval contact / notes</Label>
-        <Input id="ck-approval-notes" value={notes} disabled={readOnly}
+        <Input id="ck-approval-notes" value={notes} disabled={readOnly || approval === "no"}
           onChange={(e) => onNotes(e.target.value)} />
       </div>
     </div>

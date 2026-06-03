@@ -17,11 +17,12 @@ interface Props {
   open: boolean;
   readOnly: boolean;
   missingKeys: Set<string>;
+  editorNames: Record<string, string>;
   onToggleOpen: () => void;
   onPatch: (patch: SectionPatch) => void;
 }
 
-export function SectionCard({ section, data, open, readOnly, missingKeys, onToggleOpen, onPatch }: Props) {
+export function SectionCard({ section, data, open, readOnly, missingKeys, editorNames, onToggleOpen, onPatch }: Props) {
   return (
     <section id={`ck-section-${section.id}`} className="overflow-hidden rounded-2xl bg-card shadow-sm">
       <button type="button" onClick={onToggleOpen}
@@ -34,7 +35,7 @@ export function SectionCard({ section, data, open, readOnly, missingKeys, onTogg
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground">
-            {data.last_edited_by ? `edited · ${data.last_edited_by}` : "—"}
+            {data.last_edited_by ? `edited · ${editorNames[data.last_edited_by] ?? data.last_edited_by}` : "—"}
           </span>
           <ChevronDown className={`h-5 w-5 transition-transform ${open ? "rotate-180" : ""}`} />
         </div>

@@ -28,7 +28,7 @@ export function StatusRail({ sections, data, activeId, onJump }: Props) {
             }`}>
             <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${DOT[status]}`} />
             <span className="min-w-0">
-              <span className="block truncate font-medium">§{s.id} {s.title}</span>
+              <span className="block truncate font-medium">{s.id}. {s.title}</span>
               <span className="block truncate text-xs text-muted-foreground">
                 {status.replace("_", " ")}{sd?.owner ? ` · ${sd.owner}` : ""}
               </span>
