@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# generated test fixture — rebuilt by parse-xlsx.test.ts if absent
+/src/lib/spec-sheets/__fixtures__/sample.xlsx
+
 # next.js
 /.next/
 /out/
