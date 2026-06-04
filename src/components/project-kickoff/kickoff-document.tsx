@@ -216,11 +216,13 @@ export function KickoffDocument({
       </div>
 
       {/* Anchor nav — sticky so sections stay reachable while scrolling.
-          Full-bleed (-mx cancels main's px) with the items re-inset via the inner
-          px, so the solid white bar spans the full width and hides content scrolling
-          beneath it. No negative top-margin (that shifted the pinned position and
-          overlapped the title); a plain `top-0` pins it flush below the header. */}
-      <nav className="sticky top-0 z-20 -mx-6 border-b bg-card md:-mx-8 before:absolute before:inset-x-0 before:bottom-full before:h-8 before:bg-card before:content-['']">
+          Full-bleed (-mx cancels main's px) so the solid white bar spans full width
+          and content scrolls cleanly under it. Pinned at top-0 (lands header + main's
+          12px top padding below the viewport top). The `before` seal is sized to that
+          12px padding (h-3) — exactly the peek band when scrolled, and short enough to
+          stay inside the 24px title gap when not (so it never overlaps the title).
+          The bar itself sits `pt-4` (16px) down inside the nav's own white band. */}
+      <nav className="sticky top-0 z-20 -mx-6 border-b bg-card pt-4 md:-mx-8 before:absolute before:inset-x-0 before:bottom-full before:h-3 before:bg-card before:content-['']">
         <div className="flex flex-wrap gap-x-6 gap-y-1 px-6 py-3 md:px-8">
           {navItems.map((item) => {
             const isActive = activeId === item.id;
