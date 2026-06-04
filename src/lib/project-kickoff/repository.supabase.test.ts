@@ -5,7 +5,7 @@ function fakeRow(over: Record<string, unknown> = {}) {
   return {
     id: "id1", title: "Acme", status: "draft", locked: false,
     deliverables: { case_study: true, social: false, award: false },
-    sections: { "1": { answers: {}, approval: null, approval_notes: "", owner: null, section_status: "done", last_edited_by: null, last_edited_at: null } },
+    sections: { "1": { answers: { campaign_name: "x", client_brand: "x", industry: "x", campaign_summary: "x", business_problem: "x" }, approval: null, approval_notes: "", owner: null, section_status: "done", last_edited_by: null, last_edited_at: null } },
     created_by: "user_a", submitted_by: null, submitted_at: null,
     approved_by: null, approved_at: null,
     created_at: "t", updated_at: "t", ...over,
@@ -31,7 +31,7 @@ describe("supabase adapter", () => {
     };
     const repo = makeSupabaseKickoffRepository(client as never);
     const rows = await repo.list("drafts");
-    expect(rows[0].progress).toEqual({ done: 1, total: 5 }); // §1,2,3,4,7 active; §1 done
+    expect(rows[0].progress).toEqual({ done: 1, total: 5 }); // §1,2,3,4,7 active; §1 has all required fields filled
   });
 
   it("create() inserts and returns the new id", async () => {

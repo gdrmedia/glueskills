@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { activeSections, missingRequired, isSubmittable, progressOf } from "./validation";
+import { activeSections, missingRequired, isSubmittable, progressOf, sectionComplete } from "./validation";
 import type { Deliverables, Sections } from "./types";
+import { SECTION_BY_ID } from "./form-schema";
 
 const noDeliverables: Deliverables = { case_study: false, social: false, award: false };
 
@@ -60,9 +61,46 @@ describe("missingRequired", () => {
 });
 
 describe("progressOf", () => {
-  it("counts done sections out of active sections", () => {
+  it("counts sections whose required fields are all filled, out of active sections", () => {
     const s = emptySections();
-    s["1"].section_status = "done";
+    // §1's required fields — filling them all marks §1 complete; §2,3,7 stay empty.
+    s["1"].answers = {
+      campaign_name: "x", client_brand: "x", industry: "x",
+      campaign_summary: "x", business_problem: "x",
+    };
     expect(progressOf(noDeliverables, s)).toEqual({ done: 1, total: 4 });
+  });
+
+  it("ignores section_status — completion is derived from fields", () => {
+    const s = emptySections();
+    s["1"].section_status = "done"; // marked done, but no fields filled
+    expect(progressOf(noDeliverables, s)).toEqual({ done: 0, total: 4 });
+  });
+});
+
+describe("sectionComplete", () => {
+  it("is true when all required fields of a section are filled", () => {
+    const s = emptySections();
+    s["1"].answers = {
+      campaign_name: "x", client_brand: "x", industry: "x",
+      campaign_summary: "x", business_problem: "x",
+    };
+    expect(sectionComplete(SECTION_BY_ID[1], s)).toBe(true);
+  });
+
+  it("is false when a required field is empty", () => {
+    const s = emptySections();
+    s["1"].answers = { campaign_name: "x" };
+    expect(sectionComplete(SECTION_BY_ID[1], s)).toBe(false);
+  });
+
+  it("for a section with no required fields, requires every field filled", () => {
+    const s = emptySections();
+    // §4 (Case Study) has no required fields.
+    expect(sectionComplete(SECTION_BY_ID[4], s)).toBe(false);
+    const all: Record<string, string> = {};
+    for (const f of SECTION_BY_ID[4].fields) all[f.key] = "x";
+    s["4"].answers = all;
+    expect(sectionComplete(SECTION_BY_ID[4], s)).toBe(true);
   });
 });

@@ -7,11 +7,14 @@ import { usePathname } from "next/navigation";
 interface BackLinkProps {
   href: string;
   label: string;
+  /** Hide on routes under this prefix (e.g. a tool that has its own back nav). */
+  hideOnPrefix?: string;
 }
 
-export function BackLink({ href, label }: BackLinkProps) {
+export function BackLink({ href, label, hideOnPrefix }: BackLinkProps) {
   const pathname = usePathname();
   if (pathname === href) return null;
+  if (hideOnPrefix && pathname.startsWith(hideOnPrefix)) return null;
 
   return (
     <Link

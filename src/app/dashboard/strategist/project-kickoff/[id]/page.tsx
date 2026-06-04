@@ -12,15 +12,15 @@ function cap(s: string): string {
 }
 
 /**
- * Best-effort "First L." from an email local part: "casey.woods" → "Casey W.",
- * "monica.alameda" → "Monica A.". A single-token local (no separator, e.g.
- * "miamidesigns") has no last name to abbreviate, so it's just title-cased.
+ * Best-effort full name from an email local part: "casey.woods" → "Casey Woods",
+ * "monica.alameda" → "Monica Alameda". A single-token local (no separator, e.g.
+ * "miamidesigns") has no last name, so it's just title-cased.
  */
 function nameFromEmail(email: string): string {
   const local = email.split("@")[0];
   const tokens = local.split(/[._+-]+/).filter(Boolean);
   if (tokens.length >= 2) {
-    return `${cap(tokens[0])} ${tokens[tokens.length - 1][0].toUpperCase()}.`;
+    return `${cap(tokens[0])} ${cap(tokens[tokens.length - 1])}`;
   }
   return cap(local);
 }
@@ -28,7 +28,7 @@ function nameFromEmail(email: string): string {
 function resolveDisplayName(user: User): string {
   const firstName = user.firstName ?? "";
   const lastName = user.lastName ?? "";
-  if (firstName && lastName) return `${firstName} ${lastName[0].toUpperCase()}.`;
+  if (firstName && lastName) return `${firstName} ${lastName}`;
   if (firstName) return firstName;
   const email = user.emailAddresses[0]?.emailAddress;
   if (email) return nameFromEmail(email);

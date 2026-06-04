@@ -26,8 +26,18 @@ export function isSubmittable(deliverables: Deliverables, sections: Sections): b
   return missingRequired(deliverables, sections).length === 0;
 }
 
+/** A section is complete when all its required fields are filled (or, if it has
+ *  no required fields, when all its fields are filled). Mirrors the editor's
+ *  per-section ring so the list and editor agree on what "done" means. */
+export function sectionComplete(section: SectionDef, sections: Sections): boolean {
+  const answers = sections[String(section.id)]?.answers ?? {};
+  const required = section.fields.filter((f) => f.required);
+  const pool = required.length ? required : section.fields;
+  return pool.every((f) => (answers[f.key] ?? "").trim().length > 0);
+}
+
 export function progressOf(deliverables: Deliverables, sections: Sections): { done: number; total: number } {
   const active = activeSections(deliverables);
-  const done = active.filter((s) => sections[String(s.id)]?.section_status === "done").length;
+  const done = active.filter((s) => sectionComplete(s, sections)).length;
   return { done, total: active.length };
 }
