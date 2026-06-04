@@ -9,27 +9,57 @@ import { StatusRail } from "./status-rail";
 import { SectionCard } from "./section-card";
 import { SaveIndicator } from "./save-indicator";
 import { useAutosave } from "./use-autosave";
-import { useKickoffTransition } from "@/lib/project-kickoff/queries";
+import { useKickoffTransition, useNudgeSectionOwner } from "@/lib/project-kickoff/queries";
 import { activeSections, missingRequired } from "@/lib/project-kickoff/validation";
 import { mergeSection, type SectionPatch } from "@/lib/project-kickoff/merge";
-import type { Kickoff, DeliverableKey, Deliverables } from "@/lib/project-kickoff/types";
+import type { Kickoff, DeliverableKey, Deliverables, KickoffUser } from "@/lib/project-kickoff/types";
 
 const STATUS_LABEL: Record<Kickoff["status"], string> = {
   draft: "Draft", under_review: "Under review", approved: "Approved",
 };
 
 export function KickoffEditor(
-  { initial, currentUserId, isApprover, editorNames }:
-  { initial: Kickoff; currentUserId: string; isApprover: boolean; editorNames: Record<string, string> }
+  { initial, currentUserId, isApprover, editorNames, users }:
+  { initial: Kickoff; currentUserId: string; isApprover: boolean; editorNames: Record<string, string>; users: KickoffUser[] }
 ) {
   const router = useRouter();
   const [kickoff, setKickoff] = useState<Kickoff>(initial);
   const sections = useMemo(() => activeSections(kickoff.deliverables), [kickoff.deliverables]);
   const [openId, setOpenId] = useState<number>(sections[0]?.id ?? 1);
   const [showMissing, setShowMissing] = useState(false);
+  const [nudgingId, setNudgingId] = useState<number | null>(null);
   const autosave = useAutosave(kickoff.id);
   const transition = useKickoffTransition(kickoff.id);
+  const nudge = useNudgeSectionOwner(kickoff.id);
   const readOnly = kickoff.locked;
+
+  async function nudgeOwner(sectionId: number, message: string) {
+    const full = kickoff.sections[String(sectionId)];
+    if (!full?.owner) return;
+    const ownerName = editorNames[full.owner] ?? full.owner;
+    setNudgingId(sectionId);
+    try {
+      // Autosave is debounced; flush the current section first so the nudge route
+      // reads the freshly-selected owner instead of stale server state.
+      await autosave.flush({
+        section: sectionId,
+        patch: {
+          answers: full.answers,
+          approval: full.approval,
+          approval_notes: full.approval_notes,
+          owner: full.owner,
+          section_status: full.section_status,
+        },
+      });
+      await nudge.mutateAsync({ sectionId, message });
+      toast.success(`Reminder sent to ${ownerName}`);
+    } catch (e) {
+      toast.error("Couldn’t send the reminder");
+      throw e; // let the dialog stay open so the user can retry
+    } finally {
+      setNudgingId(null);
+    }
+  }
 
   const missing = useMemo(() => missingRequired(kickoff.deliverables, kickoff.sections), [kickoff]);
   const missingBySection = useMemo(() => {
@@ -113,6 +143,7 @@ export function KickoffEditor(
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         <aside className="lg:sticky lg:top-4 lg:self-start">
           <StatusRail sections={sections} data={kickoff.sections} activeId={openId}
+            editorNames={editorNames}
             onJump={(id) => { setOpenId(id); document.getElementById(`ck-section-${id}`)?.scrollIntoView({ behavior: "smooth" }); }} />
         </aside>
 
@@ -125,6 +156,9 @@ export function KickoffEditor(
               open={openId === s.id} readOnly={readOnly}
               missingKeys={missingBySection[s.id] ?? new Set()}
               editorNames={editorNames}
+              users={users}
+              nudging={nudgingId === s.id}
+              onNudge={(message) => nudgeOwner(s.id, message)}
               onToggleOpen={() => setOpenId(openId === s.id ? -1 : s.id)}
               onPatch={(p) => patchSection(s.id, p)} />
           ))}

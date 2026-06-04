@@ -71,6 +71,17 @@ export function useKickoffTransition(id: string) {
   });
 }
 
+export function useNudgeSectionOwner(id: string) {
+  return useMutation({
+    mutationFn: async ({ sectionId, message }: { sectionId: number; message?: string }): Promise<{ ok: true }> =>
+      jsonOrThrow(await fetch(`/api/kickoffs/${id}/nudge`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sectionId, message }),
+      })),
+  });
+}
+
 export function useDeleteKickoff() {
   const qc = useQueryClient();
   return useMutation({

@@ -11,10 +11,11 @@ interface Props {
   sections: SectionDef[];
   data: Sections;
   activeId: number;
+  editorNames: Record<string, string>;
   onJump: (id: number) => void;
 }
 
-export function StatusRail({ sections, data, activeId, onJump }: Props) {
+export function StatusRail({ sections, data, activeId, editorNames, onJump }: Props) {
   return (
     <nav className="space-y-1">
       {sections.map((s) => {
@@ -30,7 +31,7 @@ export function StatusRail({ sections, data, activeId, onJump }: Props) {
             <span className="min-w-0">
               <span className="block truncate font-medium">{s.id}. {s.title}</span>
               <span className="block truncate text-xs text-muted-foreground">
-                {status.replace("_", " ")}{sd?.owner ? ` · ${sd.owner}` : ""}
+                {status.replace("_", " ")}{sd?.owner ? ` · ${editorNames[sd.owner] ?? sd.owner}` : ""}
               </span>
             </span>
           </button>

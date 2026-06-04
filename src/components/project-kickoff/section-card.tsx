@@ -2,7 +2,8 @@
 import { ChevronDown } from "lucide-react";
 import { FieldInput } from "./field-input";
 import { ApprovalControl } from "./approval-control";
-import type { SectionDef, SectionData, ApprovalValue, SectionStatus } from "@/lib/project-kickoff/types";
+import { NudgeDialog } from "./nudge-dialog";
+import type { SectionDef, SectionData, ApprovalValue, SectionStatus, KickoffUser } from "@/lib/project-kickoff/types";
 import type { SectionPatch } from "@/lib/project-kickoff/merge";
 
 const STATUS_OPTIONS: { value: SectionStatus; label: string }[] = [
@@ -18,11 +19,18 @@ interface Props {
   readOnly: boolean;
   missingKeys: Set<string>;
   editorNames: Record<string, string>;
+  users: KickoffUser[];
+  nudging: boolean;
+  onNudge: (message: string) => Promise<void>;
   onToggleOpen: () => void;
   onPatch: (patch: SectionPatch) => void;
 }
 
-export function SectionCard({ section, data, open, readOnly, missingKeys, editorNames, onToggleOpen, onPatch }: Props) {
+export function SectionCard({ section, data, open, readOnly, missingKeys, editorNames, users, nudging, onNudge, onToggleOpen, onPatch }: Props) {
+  // Keep the <select> controlled even if the stored owner isn't in the current
+  // roster (e.g. a legacy free-text owner or a since-removed user).
+  const ownerId = data.owner ?? "";
+  const ownerInRoster = ownerId === "" || users.some((u) => u.id === ownerId);
   return (
     <section id={`ck-section-${section.id}`} className="overflow-hidden rounded-2xl bg-card shadow-sm">
       <button type="button" onClick={onToggleOpen}
@@ -50,11 +58,24 @@ export function SectionCard({ section, data, open, readOnly, missingKeys, editor
               className="rounded-lg border bg-background px-2 py-1 text-sm disabled:opacity-60">
               {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
             </select>
-            <input
-              type="text" placeholder="Owner (e.g. Strategy)" defaultValue={data.owner ?? ""}
-              disabled={readOnly}
-              onBlur={(e) => onPatch({ owner: e.target.value.trim() || null })}
-              className="rounded-lg border bg-background px-2 py-1 text-sm disabled:opacity-60" />
+            <select
+              value={ownerId} disabled={readOnly}
+              onChange={(e) => onPatch({ owner: e.target.value || null })}
+              aria-label="Section owner"
+              className="rounded-lg border bg-background px-2 py-1 text-sm disabled:opacity-60">
+              <option value="">Owner — unassigned</option>
+              {users.map((u) => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+              {!ownerInRoster && (
+                <option value={ownerId}>{editorNames[ownerId] ?? ownerId}</option>
+              )}
+            </select>
+            <NudgeDialog
+              recipientName={data.owner ? (editorNames[data.owner] ?? data.owner) : ""}
+              disabled={readOnly || !data.owner}
+              sending={nudging}
+              onSend={onNudge} />
           </div>
 
           {section.fields.map((f) => (

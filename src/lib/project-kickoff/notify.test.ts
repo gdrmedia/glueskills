@@ -6,7 +6,7 @@ vi.mock("@clerk/nextjs/server", () => ({
   clerkClient: vi.fn(async () => ({ users: { getUser: mockGetUser } })),
 }));
 
-import { notifyApproversOfSubmission } from "./notify";
+import { notifyApproversOfSubmission, notifySectionOwner } from "./notify";
 import type { Kickoff } from "./types";
 
 const kickoff = { id: "k1", title: "Acme Launch" } as Kickoff;
@@ -77,5 +77,56 @@ describe("notifyApproversOfSubmission", () => {
     const sent = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
     expect(sent.text).toContain("A teammate");
     expect(sent.to).toEqual(["gui@x.com", "monica@x.com"]);
+  });
+});
+
+describe("notifySectionOwner", () => {
+  it("emails the owner with the section title, brief title and link", async () => {
+    await notifySectionOwner({ kickoff, sectionId: 4, ownerId: "user_mon", origin: "https://app.test" });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toBe("https://api.resend.com/emails");
+    const sent = JSON.parse((init as RequestInit).body as string);
+    expect(sent.to).toEqual(["monica@x.com"]);
+    expect(sent.subject).toBe('[GlueSkills] Reminder: "Acme Launch" — Case Study Specifics');
+    expect(sent.text).toContain("Monica P");
+    expect(sent.text).toContain("Case Study Specifics");
+    expect(sent.text).toContain("https://app.test/dashboard/strategist/project-kickoff/k1");
+  });
+
+  it("includes an optional message in the email body when provided", async () => {
+    await notifySectionOwner({ kickoff, sectionId: 4, ownerId: "user_mon", origin: "https://app.test", message: "need this by Friday" });
+    const sent = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(sent.text).toContain("Message:");
+    expect(sent.text).toContain("need this by Friday");
+    expect(sent.html).toContain("need this by Friday");
+  });
+
+  it("omits the Message block when no message is given", async () => {
+    await notifySectionOwner({ kickoff, sectionId: 4, ownerId: "user_mon", origin: "https://app.test" });
+    const sent = JSON.parse((fetchMock.mock.calls[0][1] as RequestInit).body as string);
+    expect(sent.text).not.toContain("Message:");
+  });
+
+  it("does not call Resend when the owner has no email", async () => {
+    USERS.user_mon = { firstName: "Monica", lastName: "P", emailAddresses: [] };
+    await notifySectionOwner({ kickoff, sectionId: 4, ownerId: "user_mon", origin: "https://app.test" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("swallows a Resend failure (does not throw)", async () => {
+    fetchMock.mockResolvedValue(new Response("nope", { status: 500 }));
+    await expect(
+      notifySectionOwner({ kickoff, sectionId: 5, ownerId: "user_mon", origin: "https://app.test" })
+    ).resolves.toBeUndefined();
+  });
+
+  it("swallows a Clerk lookup failure without sending", async () => {
+    mockGetUser.mockRejectedValue(new Error("clerk unavailable"));
+    await expect(
+      notifySectionOwner({ kickoff, sectionId: 6, ownerId: "user_mon", origin: "https://app.test" })
+    ).resolves.toBeUndefined();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

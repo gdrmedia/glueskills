@@ -46,6 +46,12 @@ export interface Kickoff {
   updated_at: string;
 }
 
+/** A selectable user for the section-owner dropdown. */
+export interface KickoffUser {
+  id: string;
+  name: string;
+}
+
 export interface KickoffSummary {
   id: string;
   title: string;
