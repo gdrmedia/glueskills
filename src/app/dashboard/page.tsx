@@ -36,6 +36,7 @@ import {
   Tags,
   Braces,
   Eye,
+  ClipboardList,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -74,6 +75,7 @@ const allTools: ToolEntry[] = [
   { href: "/dashboard/strategist/competitor-tracker", label: "Competitor Tracker", description: "Track competitors with strengths, weaknesses, and positioning", icon: Users, section: "Strategist", sectionColor: "text-orange-500", iconBg: "bg-orange-500/12", iconText: "text-orange-600" },
   { href: "/dashboard/strategist/persona-builder", label: "Persona Builder", description: "Build detailed audience personas with goals and pain points", icon: UserCircle, section: "Strategist", sectionColor: "text-orange-500", iconBg: "bg-orange-500/12", iconText: "text-orange-600" },
   { href: "/dashboard/strategist/budget-calculator", label: "Budget Calculator", description: "Plan campaign budgets with line items and category breakdown", icon: Calculator, section: "Strategist", sectionColor: "text-orange-500", iconBg: "bg-orange-500/12", iconText: "text-orange-600" },
+  { href: "/dashboard/strategist/project-kickoff", label: "Creative Kickoff Brief", description: "Capture, hand off, and approve project kickoff briefs", icon: ClipboardList, section: "Strategist", sectionColor: "text-orange-500", iconBg: "bg-orange-500/12", iconText: "text-orange-600" },
   // SEO
   { href: "/dashboard/seo/web-scraper", label: "Web Scraper", description: "Scrape any URL for meta tags, headings, and SEO issues", icon: Globe, section: "SEO", sectionColor: "text-rose-500", iconBg: "bg-rose-500/12", iconText: "text-rose-600" },
   { href: "/dashboard/seo/keyword-density", label: "Keyword Density", description: "Analyze word frequency and keyword density in your content", icon: BarChart3, section: "SEO", sectionColor: "text-rose-500", iconBg: "bg-rose-500/12", iconText: "text-rose-600" },
@@ -126,6 +128,19 @@ const featuredWorkflows: FeaturedWorkflow[] = [
     chipText: "text-orange-700",
     btnGradient: "from-orange-600 to-orange-400",
     steps: ["Upload XLSX", "Auto-enrich", "Share viewer"],
+  },
+  {
+    href: "/dashboard/strategist/project-kickoff",
+    label: "Creative Kickoff Brief",
+    description: "Fill a multi-section kickoff brief together — hand sections off across departments, then route it through review and approval.",
+    icon: ClipboardList,
+    iconBg: "bg-orange-500/12",
+    iconText: "text-orange-600",
+    headerGradient: "from-orange-500/20 via-orange-500/8 to-transparent",
+    chipBg: "bg-orange-500/10",
+    chipText: "text-orange-700",
+    btnGradient: "from-orange-600 to-orange-400",
+    steps: ["Draft + hand off", "Submit for review", "Approve"],
   },
 ];
 
